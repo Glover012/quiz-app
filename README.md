@@ -1,3 +1,5 @@
 # Quiz App
 
-Simple quiz application. Not ready yet.
+Simple quiz application.
+
+Part of GUI is ready.
