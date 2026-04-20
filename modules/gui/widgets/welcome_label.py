@@ -4,7 +4,7 @@ from PySide6.QtCore import Qt
 class WelcomeLabel(QLabel):
     def __init__(self):
         super().__init__()
-        self.setText('Welcome to Quiz!')
+        self.setText('Welcome to Quiz App!')
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.setStyleSheet('''
                            font-size: 40px;
