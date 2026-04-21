@@ -113,7 +113,7 @@ class QuestionParams(QWidget):
             "Multiple choice": "multiple",
             "True / False": "boolean"}
         
-        numberList = [str(i) for i in range(2, 30)]
+        numberList = [str(i) for i in range(2, 31)]
         self.amount_cb = QComboBox(); 
         self.amount_cb.addItems(numberList)
 

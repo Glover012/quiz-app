@@ -1,9 +1,11 @@
-from PySide6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QLabel, QRadioButton, QScrollArea
+from PySide6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QLabel, QRadioButton, QScrollArea, QButtonGroup
 from PySide6.QtCore import Qt
 from ...questions import Question
 
 class QuestionDisplay(QWidget):
     """Widget to display questions."""
+    widget_list = []
+
     def __init__(self, questionsList):
         super().__init__()
         self.questionsList = questionsList
@@ -29,11 +31,13 @@ class QuestionDisplay(QWidget):
 
     def displayQuestions(self, scrollable_widget_layout):
         for question in self.questionsList:
-            scrollable_widget_layout.addWidget(QuestionWidget(question))
+            question_widget = QuestionWidget(question)
+            self.widget_list.append(question_widget)
+            question_widget.label.setText( f"{len(self.widget_list)}. {question_widget.label.text()}") # Numbering questions
+            scrollable_widget_layout.addWidget(question_widget)
 
 class QuestionWidget(QWidget):
     question_style = ''
-    question_number = 1
 
     def __init__(self, question : Question):
         super().__init__()
@@ -47,17 +51,21 @@ class QuestionWidget(QWidget):
         self.setLayout(self.main_layout)
 
     def questionLabel(self):
-        label = QLabel(f'{self.question_number}. {self.question.question}')
-        self.main_layout.addWidget(label)
-        self.question_number += 1 # For iterating questions
+        self.label = QLabel(self.question.question)
+        self.main_layout.addWidget(self.label)
 
     def questionAnswersRadioButtons(self):
-        if self.question.tp == 'multiple':
-            index = ['a', 'b', 'c', 'd']
-            for i, answer in enumerate(self.question.all_answers):
-                a_button = QRadioButton(f'{index[i]}. {answer}')
-                self.main_layout.addWidget(a_button)
-        elif self.question.tp == 'boolean':
-            for answer in self.question.all_answers:
-                a_button = QRadioButton(answer)
-                self.main_layout.addWidget(a_button)
+        index = ['a', 'b', 'c', 'd']
+        self.a_button_group = QButtonGroup()
+        for i, answer in enumerate(self.question.all_answers):
+            button = QRadioButton(f'{f'{index[i]}. ' if self.question.tp == "multiple" else ""}{answer}')
+            self.a_button_group.addButton(button)
+            self.main_layout.addWidget(button)
+        self.a_button_group.buttonClicked.connect(self.onButtonClicked)
+
+    def onButtonClicked(self, button):
+        self.user_answer = button.text()
+        if self.question.correct_answer in self.user_answer:
+            print('Correct')
+        else:
+            print('Incorrect')
