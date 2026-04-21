@@ -27,7 +27,7 @@ class QuizMenu(QMenu):
     
     def pressedStartQuiz(self):
         print('pressedStartQuiz')
-        self.main_window.displayWidget(StartQuiz())
+        self.main_window.displayWidget(StartQuiz(self.main_window))
     
     def pressedExit(self):
         print('Exit')

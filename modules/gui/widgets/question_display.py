@@ -1,12 +1,18 @@
-from PySide6.QtWidgets import QVBoxLayout, QWidget, QLabel, QRadioButton, QScrollArea
+from PySide6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QLabel, QRadioButton, QScrollArea
 from PySide6.QtCore import Qt
+from ...questions import Questions
 
 class QuestionDisplay(QWidget):
     """Widget to display questions."""
-    def __init__(self):
+    def __init__(self, main_window : QMainWindow, questions : Questions):
         super().__init__()
-        self.initUI()
-        self.printQuestions()
+        self.main_window = main_window
+        self.questions = questions
+        self.__initLayout()
+
+    def __initLayout(self):
+        self.main_layout = QVBoxLayout()
+        self.setLayout(self.main_layout)
 
     def initUI(self):
         self.main_layout = QVBoxLayout(self)
