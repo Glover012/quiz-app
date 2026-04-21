@@ -1,6 +1,5 @@
 from PySide6.QtWidgets import QMainWindow, QVBoxLayout, QWidget
-from PySide6.QtCore import Qt
-from .widgets import StartQuiz, QuestionDisplay, WelcomeLabel
+from .widgets import WelcomeLabel
 from .menu_bar import AppMenu
 
 class MainWindow(QMainWindow):
@@ -24,7 +23,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.central_widget)
 
     def __initAppMenu(self):
-        self.setMenuBar(AppMenu(main_window=self))
+        self.setMenuBar(AppMenu(self))
 
     def displayWidget(self, widget : QWidget):
         """Display Widget in MainWindow."""

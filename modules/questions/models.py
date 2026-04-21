@@ -1,6 +1,5 @@
 import requests, html, random
 
-# Questions
 class Question:
     def __init__(self, tp, difficulty, category, question, correct_answer, incorrect_answers, all_answers, points):
         self.tp = tp

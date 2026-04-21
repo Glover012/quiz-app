@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QMainWindow, QVBoxLayout, QGridLayout, QWidget, QLabel,QPushButton, QComboBox
 from PySide6.QtCore import Qt
 from ...questions import Questions
+from .question_display import QuestionDisplay
 
 class StartQuiz(QWidget):
     def __init__(self, main_window : QMainWindow):
@@ -112,7 +113,7 @@ class QuestionParams(QWidget):
             "Multiple choice": "multiple",
             "True / False": "boolean"}
         
-        numberList = [str(i+1) for i in range(30)]
+        numberList = [str(i) for i in range(2, 30)]
         self.amount_cb = QComboBox(); 
         self.amount_cb.addItems(numberList)
 
@@ -141,3 +142,13 @@ class QuestionParams(QWidget):
         cat = self.cat_cb.currentData()
         tp = self.tp_cb.currentData()
         print(f'Amount: {amount}, Difficulty: {diff}, Category: {cat}, Type: {tp}')
+
+        # Init questions from API
+        questions = Questions(qAmount=amount, qCategory=cat, qDifficulty=diff, qType=tp)
+        q_list = questions.questionsList
+        print(questions.questionsList)
+
+        questionDisplay = QuestionDisplay(q_list)
+
+        # Display questions
+        self.main_window.displayWidget(questionDisplay)

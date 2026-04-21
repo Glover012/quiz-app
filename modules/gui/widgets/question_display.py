@@ -1,38 +1,63 @@
 from PySide6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QLabel, QRadioButton, QScrollArea
 from PySide6.QtCore import Qt
-from ...questions import Questions
+from ...questions import Question
 
 class QuestionDisplay(QWidget):
     """Widget to display questions."""
-    def __init__(self, main_window : QMainWindow, questions : Questions):
+    def __init__(self, questionsList):
         super().__init__()
-        self.main_window = main_window
-        self.questions = questions
+        self.questionsList = questionsList
         self.__initLayout()
+        self.__initScrollWidget()
+        self.displayQuestions(self.scrollable_widget_layout)
 
     def __initLayout(self):
         self.main_layout = QVBoxLayout()
         self.setLayout(self.main_layout)
 
-    def initUI(self):
-        self.main_layout = QVBoxLayout(self)
-
-        self.question_layout = QVBoxLayout()
-        self.question_widget = QWidget()
-        self.question_widget.setLayout(self.question_layout)
-        self.main_layout.addWidget(self.question_widget)
+    def __initScrollWidget(self):
+        self.scrollable_widget = QWidget()
+        self.scrollable_widget_layout = QVBoxLayout()
+        self.scrollable_widget.setLayout(self.scrollable_widget_layout)
 
         scroll = QScrollArea()
-        scroll.setWidget(self.question_widget)
+        scroll.setWidget(self.scrollable_widget)
         scroll.setWidgetResizable(True)
         self.main_layout.addWidget(scroll)
         scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
-    def printQuestions(self):
-        for q in range(1, 30):
-            question = QLabel(f'{q}. To jest testowe pytanie?')
-            self.question_layout.addWidget(question)
-            for i, a in enumerate(['a', 'b', 'c', 'd']):
-                answer = QRadioButton(f'{a}. Odpowiedź {i}')
-                self.question_layout.addWidget(answer)
+    def displayQuestions(self, scrollable_widget_layout):
+        for question in self.questionsList:
+            scrollable_widget_layout.addWidget(QuestionWidget(question))
+
+class QuestionWidget(QWidget):
+    question_style = ''
+    question_number = 1
+
+    def __init__(self, question : Question):
+        super().__init__()
+        self.question = question
+        self.__initLayout()
+        self.questionLabel()
+        self.questionAnswersRadioButtons()
+
+    def __initLayout(self):
+        self.main_layout = QVBoxLayout()
+        self.setLayout(self.main_layout)
+
+    def questionLabel(self):
+        label = QLabel(f'{self.question_number}. {self.question.question}')
+        self.main_layout.addWidget(label)
+        self.question_number += 1 # For iterating questions
+
+    def questionAnswersRadioButtons(self):
+        if self.question.tp == 'multiple':
+            index = ['a', 'b', 'c', 'd']
+            for i, answer in enumerate(self.question.all_answers):
+                a_button = QRadioButton(f'{index[i]}. {answer}')
+                self.main_layout.addWidget(a_button)
+        elif self.question.tp == 'boolean':
+            for answer in self.question.all_answers:
+                a_button = QRadioButton(answer)
+                self.main_layout.addWidget(a_button)
