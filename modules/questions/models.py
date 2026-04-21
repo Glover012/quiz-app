@@ -22,6 +22,7 @@ class Questions:
         self.qType = str(qType).lower()
         self.url = f"https://opentdb.com/api.php?amount={self.qAmount}{f"&category={self.qCategory}" if self.qCategory != "" else ""}{f"&difficulty={self.qDifficulty}" if self.qDifficulty != "" else ""}{f"&type={self.qType}" if self.qType != "" else ""}"
         print(self.url)
+        self.questionsList.clear() # Clear questionsList before adding new questions
         # Methods
         self.questionsData = self.getQuestionsDataFromApi(self.url)
         self.questionsDataToObjects(self.questionsData)

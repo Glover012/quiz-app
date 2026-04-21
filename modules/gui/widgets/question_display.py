@@ -11,6 +11,7 @@ class QuestionDisplay(QWidget):
         self.questionsList = questionsList
         self.__initLayout()
         self.__initScrollWidget()
+        self.widget_list.clear() # Clear widget list before displaying new questions
         self.displayQuestions(self.scrollable_widget_layout)
 
     def __initLayout(self):
