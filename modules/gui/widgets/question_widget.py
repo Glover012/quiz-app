@@ -10,6 +10,9 @@ class QuestionWidget(QWidget):
         self.__initLayout()
         self.questionLabel()
         self.questionAnswersRadioButtons()
+        # Default values
+        self.correct_answer = False
+        self.user_answer = None
 
     def __initLayout(self):
         self.main_layout = QVBoxLayout()
@@ -31,6 +34,4 @@ class QuestionWidget(QWidget):
     def onButtonClicked(self, button):
         self.user_answer = button.text()
         if self.question.correct_answer in self.user_answer:
-            print('Correct')
-        else:
-            print('Incorrect')
+            self.correct_answer = True
