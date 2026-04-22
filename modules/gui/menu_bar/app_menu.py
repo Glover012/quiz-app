@@ -1,5 +1,4 @@
-from PySide6.QtWidgets import QMainWindow, QMenuBar, QMessageBox, QMenu
-from PySide6.QtGui import QAction
+from PySide6.QtWidgets import QMainWindow, QMenuBar
 from .menus import QuizMenu, HelpMenu
 
 class AppMenu(QMenuBar):
