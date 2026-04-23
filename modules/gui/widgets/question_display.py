@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QVBoxLayout, QWidget, QScrollArea, QPushButton
+from PySide6.QtWidgets import QVBoxLayout, QWidget, QScrollArea, QPushButton, QLabel
 from PySide6.QtCore import Qt
 from .question_widget import QuestionWidget
 
@@ -39,15 +39,44 @@ class QuestionDisplay(QWidget):
             scrollable_widget_layout.addWidget(question_widget)
 
     def addFinishButton(self):
-        style = ''''''
-        self.finish_button = QPushButton('Finish')
+        self.finish_button = QPushButton('Finish Quiz')
         self.finish_button.clicked.connect(self.finishButtonClicked)
         self.main_layout.addWidget(self.finish_button)
 
     def finishButtonClicked(self):
         print('Clicked finish')
-        self.displayResults()
         self.finish_button.deleteLater()
+        self.displayResults()
 
     def displayResults(self):
         print('Results')
+        total_questions = len(self.widget_list)
+        total_points = 0
+        user_points = 0
+        user_good_answers = 0
+        # Result calculation
+        for widget in self.widget_list:
+            # Color button text based on which contain correct answer. Disable all button from manipulation.
+            for button in widget.a_button_group.buttons(): 
+                if widget.question.correct_answer in button.text():
+                    button.setStyleSheet('color: #2ecc71;')
+                else:
+                    button.setStyleSheet('color: #e74c3c;')
+                button.setEnabled(False)
+            # Calculate results, color label border based on user answer
+            total_points += widget.question.points
+            if widget.correct_answer:
+                widget.label.setStyleSheet('''
+                border: 2px solid #2ecc71;
+                ''')
+                user_points += widget.question.points
+                user_good_answers += 1
+            else:
+                widget.label.setStyleSheet('''
+                border: 2px solid #e74c3c;
+                ''')
+
+        result_label = QLabel("Results", alignment=Qt.AlignmentFlag.AlignCenter)
+        self.main_layout.addWidget(result_label)
+        score_label = QLabel(f'Score - {user_points}/{total_points} points. {(user_points/float(total_points*0.01)):.2f}%', alignment=Qt.AlignmentFlag.AlignLeft)
+        self.main_layout.addWidget(score_label)
