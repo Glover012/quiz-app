@@ -1,12 +1,11 @@
-from PySide6.QtWidgets import QVBoxLayout, QWidget, QLabel, QRadioButton, QButtonGroup
+from PySide6.QtWidgets import QVBoxLayout, QFrame, QLabel, QRadioButton, QButtonGroup
 from ...questions import Question
 
-class QuestionWidget(QWidget):
-    question_style = ''
-
+class QuestionWidget(QFrame):
     def __init__(self, question : Question):
         super().__init__()
         self.question = question
+        self.setObjectName('questionFrame')
         self.__initLayout()
         self.questionLabel()
         self.questionAnswersRadioButtons()

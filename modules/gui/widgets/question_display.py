@@ -63,20 +63,26 @@ class QuestionDisplay(QWidget):
                 else:
                     button.setStyleSheet('color: #e74c3c;')
                 button.setEnabled(False)
-            # Calculate results, color label border based on user answer
+            # Calculate results, color QuestionWidget Frame based on user answer
             total_points += widget.question.points
             if widget.correct_answer:
-                widget.label.setStyleSheet('''
-                border: 2px solid #2ecc71;
-                ''')
+                widget.setStyleSheet('''
+                                     QFrame#questionFrame {
+                                        border: 2px solid #2ecc71;
+                                     }
+                                     ''')
                 user_points += widget.question.points
                 user_good_answers += 1
             else:
-                widget.label.setStyleSheet('''
-                border: 2px solid #e74c3c;
-                ''')
+                widget.setStyleSheet('''
+                                     QFrame#questionFrame {
+                                        border: 2px solid #e74c3c;
+                                     }
+                                     ''')
 
         result_label = QLabel("Results", alignment=Qt.AlignmentFlag.AlignCenter)
         self.main_layout.addWidget(result_label)
-        score_label = QLabel(f'Score - {user_points}/{total_points} points. {(user_points/float(total_points*0.01)):.2f}%', alignment=Qt.AlignmentFlag.AlignLeft)
+        score_label = QLabel(f'Score - {user_points}/{total_points} points. {(user_points/float(total_points*0.01)):.2f}%', alignment=Qt.AlignmentFlag.AlignCenter)
         self.main_layout.addWidget(score_label)
+        good_answers_label = QLabel(f'Good answers - {user_good_answers}/{total_questions}', alignment=Qt.AlignmentFlag.AlignCenter)
+        self.main_layout.addWidget(good_answers_label)
