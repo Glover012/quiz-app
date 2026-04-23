@@ -35,3 +35,5 @@ class QuestionWidget(QWidget):
         self.user_answer = button.text()
         if self.question.correct_answer in self.user_answer:
             self.correct_answer = True
+        else:
+            self.correct_answer = False
