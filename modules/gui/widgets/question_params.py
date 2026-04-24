@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QMainWindow, QVBoxLayout, QGridLayout, QWidget, QLabel,QPushButton, QComboBox
 from PySide6.QtCore import Qt
-from ...questions import Questions
+from ...questions import Questions, CATEGORIES, DIFFICULTIES, QUESTION_TYPES
 from .question_display import QuestionDisplay
 
 class QuestionParams(QWidget):
@@ -39,59 +39,22 @@ class QuestionParams(QWidget):
         params_layout.addWidget(QLabel('Category'), 0, 2, alignment=Qt.AlignmentFlag.AlignCenter)
         params_layout.addWidget(QLabel('Type'), 0, 3, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        # ComboBox data
-        categories = {
-            "Any Category": "",
-            "General Knowledge": "9",
-            "Entertainment: Books": "10",
-            "Entertainment: Film": "11",
-            "Entertainment: Music": "12",
-            "Entertainment: Musicals & Theatres": "13",
-            "Entertainment: Television": "14",
-            "Entertainment: Video Games": "15",
-            "Entertainment: Board Games": "16",
-            "Science & Nature": "17",
-            "Science: Computers": "18",
-            "Science: Mathematics": "19",
-            "Mythology": "20",
-            "Sports": "21",
-            "Geography": "22",
-            "History": "23",
-            "Politics": "24",
-            "Art": "25",
-            "Celebrities": "26",
-            "Animals": "27",
-            "Vehicles": "28",
-            "Entertainment: Comics": "29",
-            "Science: Gadgets": "30",
-            "Entertainment: Japanese Anime & Manga": "31",
-            "Entertainment: Cartoon & Animations": "32"}
-        
-        difficulties = {
-            "Any dificulty": "", 
-            "Easy": "easy", 
-            "Medium": "medium", 
-            "Hard": "hard"}
-        
-        types = {
-            "Any type": "",
-            "Multiple choice": "multiple",
-            "True / False": "boolean"}
-        
-        numberList = [str(i) for i in range(2, 31)]
+        min_amout = 2
+        max_amount = 30
+        questionAmountList = [str(i) for i in range(min_amout, max_amount + 1)]
         self.amount_cb = QComboBox(); 
-        self.amount_cb.addItems(numberList)
+        self.amount_cb.addItems(questionAmountList)
 
         self.cat_cb = QComboBox();
-        for cat, id in categories.items():
+        for cat, id in CATEGORIES.items():
             self.cat_cb.addItem(cat, id)
 
         self.diff_cb = QComboBox();
-        for diff, id in difficulties.items():
+        for diff, id in DIFFICULTIES.items():
             self.diff_cb.addItem(diff, id)
 
         self.tp_cb = QComboBox();
-        for tp, id in types.items():
+        for tp, id in QUESTION_TYPES.items():
             self.tp_cb.addItem(tp, id)
 
         params_layout.addWidget(self.amount_cb, 1, 0)
