@@ -66,3 +66,11 @@ QFrame#questionWidgetFrame[answerState='correct'] {
 QFrame#questionWidgetFrame[answerState='incorrect'] {
     border: 2px solid #e74c3c;
 }
+
+QRadioButton#questionAnswerRadioButton[containAnswer='correct'] {
+    color: #2ecc71;
+}
+
+QRadioButton#questionAnswerRadioButton[containAnswer='incorrect'] {
+    color: #e74c3c;
+}

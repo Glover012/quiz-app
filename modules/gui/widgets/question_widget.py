@@ -26,6 +26,7 @@ class QuestionWidget(QFrame):
         self.a_button_group = QButtonGroup()
         for i, answer in enumerate(self.question.all_answers):
             button = QRadioButton(f'{f'{index[i]}. ' if self.question.tp == "multiple" else ""}{answer}')
+            button.setObjectName('questionAnswerRadioButton')
             self.a_button_group.addButton(button)
             self.main_layout.addWidget(button)
         self.a_button_group.buttonClicked.connect(self.onButtonClicked)
