@@ -6,12 +6,4 @@ class WelcomeLabel(QLabel):
         super().__init__()
         self.setText('Welcome to Quiz App!')
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.setStyleSheet('''
-                           font-size: 40px;
-                           font-weight: bold;
-                           font-family: Arial;
-                           border-radius: 10px;
-                           ''')
-
-
-
+        self.setObjectName('welcomeLabel')

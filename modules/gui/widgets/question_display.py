@@ -30,6 +30,7 @@ class QuestionDisplay(QWidget):
         self.scrollable_widget.setLayout(self.scrollable_widget_layout)
 
         scroll = QScrollArea()
+        scroll.setFrameShape(QScrollArea.Shape.NoFrame) # Remove scroll area default frame
         scroll.setWidget(self.scrollable_widget)
         scroll.setWidgetResizable(True)
         self.main_layout.addWidget(scroll)
@@ -60,32 +61,30 @@ class QuestionDisplay(QWidget):
         for widget in self.widget_list:
             # Color widget frames based on user_answer
             if widget.correct_answer:
-                widget.setStyleSheet('''
-                                    QFrame#questionFrame {
-                                        border: 2px solid #2ecc71;
-                                    }
-                                    ''')
+                widget.setProperty('answerState', 'correct')
             else:
-                widget.setStyleSheet('''
-                                    QFrame#questionFrame {
-                                        border: 2px solid #e74c3c;
-                                    }
-                                    ''')
-            # Color button text based on which contain correct answer. 
+                widget.setProperty('answerState', 'incorrect')
+            # Refresh widget style to apply new properties
+            widget.style().polish(widget)
+
+            # Color button text based on which contain correct answer
             for button in widget.a_button_group.buttons(): 
                 if widget.question.correct_answer in button.text():
                     button.setStyleSheet('color: #2ecc71;')
                 else:
                     button.setStyleSheet('color: #e74c3c;')
-                button.setEnabled(False) # Disable all button from manipulation.
+                button.setEnabled(False) # Disable all button from manipulation
 
     def displayResults(self):
         """Display quiz results."""
         quiz_result_label = QLabel("Results", alignment=Qt.AlignmentFlag.AlignCenter)
-
-        quiz_score_label = QLabel(f'Score - {self.user_points}/{self.total_question_points} points. {(self.user_points/float(self.total_question_points*0.01)):.2f}%', alignment=Qt.AlignmentFlag.AlignCenter)
+        quiz_result_label.setObjectName('quizResultLabel')
 
         user_good_answers_label = QLabel(f'Good answers - {self.user_good_answers}/{len(self.questionsList)}', alignment=Qt.AlignmentFlag.AlignCenter)
+        user_good_answers_label.setObjectName('userGoodAnswersLabel')
+
+        quiz_score_label = QLabel(f'Score - {self.user_points}/{self.total_question_points} points. {(self.user_points/float(self.total_question_points*0.01)):.2f}%', alignment=Qt.AlignmentFlag.AlignCenter)
+        quiz_score_label.setObjectName('quizScoreLabel')
 
         self.main_layout.addWidget(quiz_result_label)
         self.main_layout.addWidget(quiz_score_label)
@@ -94,6 +93,7 @@ class QuestionDisplay(QWidget):
     def addFinishQuizButton(self):
         """Add button to finish quiz."""
         self.finish_quiz_button = QPushButton('Finish Quiz')
+        self.finish_quiz_button.setObjectName('finishQuizButton')
         self.finish_quiz_button.clicked.connect(self.finishQuizButtonClicked)
         self.main_layout.addWidget(self.finish_quiz_button)
 

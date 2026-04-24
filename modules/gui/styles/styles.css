@@ -1,0 +1,68 @@
+/* Stylesheet for the quiz application. */
+
+/* Global styles */
+QLabel{
+    font-size: 15px;
+    font-family: Arial;
+}
+
+QPushButton {
+    font-size: 20px;
+    font-family: Arial;
+}
+
+/* Local styles */
+QLabel#appName {
+    font-size: 40px;
+    font-weight: bold;
+    border-radius: 10px;
+}
+
+QLabel#welcomeLabel {
+    font-size: 40px;
+    font-weight: bold;
+    border-radius: 10px;
+}
+
+QLabel#selectParamsLabel {
+    font-size: 20px;
+    border-radius: 10px;
+}
+
+QLabel#quizResultLabel {
+    font-size: 30px;
+    font-weight: bold;
+    border-radius: 10px;
+}
+
+QLabel#quizScoreLabel {
+    font-size: 20px;
+}
+
+QLabel#userGoodAnswersLabel {
+    font-size: 20px;
+    font-family: Arial;
+}
+
+QPushButton#startButton {
+    font-size: 40px;
+    font-family: Arial;
+}
+
+QPushButton#finishQuizButton {
+    font-size: 30px;
+    font-family: Arial;
+}
+
+QFrame#questionWidgetFrame {
+    border: 2px solid #666666;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+QFrame#questionWidgetFrame[answerState='correct'] {
+    border: 2px solid #2ecc71;
+}
+QFrame#questionWidgetFrame[answerState='incorrect'] {
+    border: 2px solid #e74c3c;
+}

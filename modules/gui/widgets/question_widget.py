@@ -5,7 +5,7 @@ class QuestionWidget(QFrame):
     def __init__(self, question : Question):
         super().__init__()
         self.question = question
-        self.setObjectName('questionFrame')
+        self.setObjectName('questionWidgetFrame')
         self.__initLayout()
         self.questionLabel()
         self.questionAnswersRadioButtons()

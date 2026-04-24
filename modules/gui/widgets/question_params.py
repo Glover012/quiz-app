@@ -20,23 +20,24 @@ class QuestionParams(QWidget):
         sb_layout = QVBoxLayout()
         sb_widget.setLayout(sb_layout)
         self.sb = QPushButton('Start')
-        self.sb.setStyleSheet('''
-                         font-size: 30px;
-                         font-family: Arial;
-                         ''')
+        self.sb.setObjectName('startButton')
         sb_layout.addWidget(self.sb, alignment=Qt.AlignmentFlag.AlignCenter)
         self.sb.clicked.connect(self.startButtonClicked)
         self.main_layout.addWidget(sb_widget, alignment=Qt.AlignmentFlag.AlignCenter)
     
     def paramsWidget(self):
+        select_params_label = QLabel('Select quiz parameters')
+        select_params_label.setObjectName('selectParamsLabel')
+        self.main_layout.addWidget(select_params_label, alignment=Qt.AlignmentFlag.AlignCenter)
+
         params_widget = QWidget()
         params_layout = QGridLayout()
         params_widget.setLayout(params_layout)
 
-        params_layout.addWidget(QLabel('Amount'), 0, 0)
-        params_layout.addWidget(QLabel('Difficulty'), 0, 1)
-        params_layout.addWidget(QLabel('Category'), 0, 2)
-        params_layout.addWidget(QLabel('Type'), 0, 3)
+        params_layout.addWidget(QLabel('Amount'), 0, 0, alignment=Qt.AlignmentFlag.AlignCenter)
+        params_layout.addWidget(QLabel('Difficulty'), 0, 1, alignment=Qt.AlignmentFlag.AlignCenter)
+        params_layout.addWidget(QLabel('Category'), 0, 2, alignment=Qt.AlignmentFlag.AlignCenter)
+        params_layout.addWidget(QLabel('Type'), 0, 3, alignment=Qt.AlignmentFlag.AlignCenter)
 
         # ComboBox data
         categories = {

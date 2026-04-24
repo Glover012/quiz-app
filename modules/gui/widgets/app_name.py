@@ -14,10 +14,5 @@ class AppName(QWidget):
 
     def displayAppName(self):
         app_name = QLabel('Quiz App')
-        app_name.setStyleSheet('''
-                        font-size: 40px;
-                        font-weight: bold;
-                        font-family: Arial;
-                        border-radius: 10px;
-                        ''')
+        app_name.setObjectName('appName')
         self.main_layout.addWidget(app_name, alignment=Qt.AlignmentFlag.AlignCenter)
