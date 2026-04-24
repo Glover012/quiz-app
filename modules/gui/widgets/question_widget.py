@@ -13,6 +13,7 @@ class QuestionWidget(QFrame):
         self.__initLayout()
         self.questionLabel()
         self.questionAnswersRadioButtons()
+        self.questionInfoLabel()
         # Default values
         self.correct_answer = False
         self.user_answer = None
@@ -23,6 +24,7 @@ class QuestionWidget(QFrame):
 
     def questionLabel(self):
         self.label = QLabel(self.question.question)
+        self.label.setWordWrap(True)
         self.main_layout.addWidget(self.label)
 
     def questionAnswersRadioButtons(self):
@@ -34,6 +36,11 @@ class QuestionWidget(QFrame):
             self.a_button_group.addButton(button)
             self.main_layout.addWidget(button)
         self.a_button_group.buttonClicked.connect(self.onButtonClicked)
+
+    def questionInfoLabel(self):
+        infoLabel = QLabel(f'Category: {self.question.category} | Difficulty: {self.question.difficulty} | Points: {self.question.points}')
+        infoLabel.setObjectName('questionInfoLabel')
+        self.main_layout.addWidget(infoLabel)
 
     def onButtonClicked(self, button):
         self.user_answer = button.text()
