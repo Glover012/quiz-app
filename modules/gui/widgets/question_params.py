@@ -1,10 +1,15 @@
-from PySide6.QtWidgets import QMainWindow, QVBoxLayout, QGridLayout, QWidget, QLabel,QPushButton, QComboBox
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from ..main_window import MainWindow
+
+from PySide6.QtWidgets import QVBoxLayout, QGridLayout, QWidget, QLabel,QPushButton, QComboBox
 from PySide6.QtCore import Qt
 from ...questions import Questions, CATEGORIES, DIFFICULTIES, QUESTION_TYPES
 from .question_display import QuestionDisplay
 
 class QuestionParams(QWidget):
-    def __init__(self, main_window : QMainWindow):
+    def __init__(self, main_window: MainWindow):
         super().__init__()
         self.main_window = main_window
         self.__initLayout()

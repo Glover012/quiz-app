@@ -1,8 +1,12 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from ...questions import Question
+
 from PySide6.QtWidgets import QVBoxLayout, QFrame, QLabel, QRadioButton, QButtonGroup
-from ...questions import Question
 
 class QuestionWidget(QFrame):
-    def __init__(self, question : Question):
+    def __init__(self, question: Question):
         super().__init__()
         self.question = question
         self.setObjectName('questionWidgetFrame')

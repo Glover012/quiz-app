@@ -1,10 +1,9 @@
-from PySide6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QLabel
+from PySide6.QtWidgets import QVBoxLayout, QWidget, QLabel
 from PySide6.QtCore import Qt
 
 class AppName(QWidget):
-    def __init__(self, main_window : QMainWindow):
+    def __init__(self):
         super().__init__()
-        self.main_window = main_window
         self.__initLayout()
         self.displayAppName()
 
