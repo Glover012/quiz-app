@@ -25,11 +25,22 @@ class MainWindow(QMainWindow):
     def __initAppMenu(self):
         self.setMenuBar(AppMenu(self))
 
-    def displayWidget(self, widget : QWidget):
+    def displayWidget(self, widget: QWidget):
         """Display Widget in MainWindow."""
-        self.clear()
-        self.main_layout.addWidget(widget)
+        if self.isWidgetTypeDisplayed(widget):
+            print('Widget is already displayed.')
+        else:
+            self.clear()
+            self.main_layout.addWidget(widget)
 
+    def isWidgetTypeDisplayed(self, widget: QWidget) -> bool:
+        """Checks if widget type is displayed in MainWindow."""
+        if self.main_layout.count() == 0:
+            return False
+        current_item = self.main_layout.itemAt(0)
+        current_widget = current_item.widget() if current_item is not None else None
+        return type(current_widget) == type(widget)
+        
     def clear(self):
         """Delete all widgets from MainWindow."""
         widget_count = self.main_layout.count()
