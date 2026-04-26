@@ -1,5 +1,6 @@
 from typing import Any
 import requests
+from sqlalchemy import Null
 
 class OpenTriviaClientError(Exception):
     """Class for handling exceptions when communicating with OpenTDB."""
@@ -30,8 +31,11 @@ class OpenTriviaClient:
         try:
             response = requests.get(self.BASE_URL, params=params, timeout=10)
             response.raise_for_status()
-            return response.json()
-        
+            data = response.json()
+            if not data['results']:
+                raise OpenTriviaClientError('No questions found for selected parameters. Try different category, difficulty or type.')
+            return data
+   
         except requests.exceptions.Timeout as error:
             raise OpenTriviaClientError('Request to OpenTDB timed out.') from error
 
