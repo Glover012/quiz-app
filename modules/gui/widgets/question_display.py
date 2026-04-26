@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QVBoxLayout, QWidget, QScrollArea, QPushButton, QLabel
 from PySide6.QtCore import Qt
 from .question_widget import QuestionWidget
+from ...questions import Question
 
 class QuestionDisplay(QWidget):
     """
@@ -9,9 +10,9 @@ class QuestionDisplay(QWidget):
     """
     widget_list = []
 
-    def __init__(self, questionsList):
+    def __init__(self, questions_list: list[Question]) -> None:
         super().__init__()
-        self.questionsList = questionsList
+        self.questionsList = questions_list
         self.__initLayout()
         self.__initScrollableWidget()
         self.widget_list.clear() # Clear widget list before displaying new questions

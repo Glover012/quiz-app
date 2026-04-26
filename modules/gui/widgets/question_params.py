@@ -4,8 +4,8 @@ if TYPE_CHECKING:
     from ..main_window import MainWindow
 
 from PySide6.QtWidgets import QVBoxLayout, QGridLayout, QWidget, QLabel,QPushButton, QComboBox
-from PySide6.QtCore import Qt
-from ...questions import Questions, CATEGORIES, DIFFICULTIES, QUESTION_TYPES
+from PySide6.QtCore import Qt, QTimer
+from ...questions import Questions, CATEGORIES, DIFFICULTIES, QUESTION_TYPES, OpenTriviaClientError
 from .question_display import QuestionDisplay
 
 class QuestionParams(QWidget):
@@ -14,6 +14,7 @@ class QuestionParams(QWidget):
         self.main_window = main_window
         self.__initLayout()
         self.startButtonWidget()
+        self.add_error_label()
         self.paramsWidget()
 
     def __initLayout(self):
@@ -29,6 +30,22 @@ class QuestionParams(QWidget):
         sb_layout.addWidget(self.sb, alignment=Qt.AlignmentFlag.AlignCenter)
         self.sb.clicked.connect(self.startButtonClicked)
         self.main_layout.addWidget(sb_widget, alignment=Qt.AlignmentFlag.AlignCenter)
+
+    def add_error_label(self):
+        self.error_label = QLabel(alignment=Qt.AlignmentFlag.AlignCenter)
+        self.error_label.setObjectName('errorLabel')
+        # Set size policy, to avoid widets movement on the screen when error label shows up
+        size_policy = self.error_label.sizePolicy()
+        size_policy.setRetainSizeWhenHidden(True)
+        self.error_label.setSizePolicy(size_policy)
+        self.error_label.hide()
+        self.main_layout.addWidget(self.error_label)
+
+    def show_error(self, error: OpenTriviaClientError):
+        self.error_label.setText(f'API Error - {error}')
+        self.error_label.show()
+        # Hide label after 3 seconds
+        QTimer.singleShot(3000, self.error_label.hide)
     
     def paramsWidget(self):
         select_params_label = QLabel('Select quiz parameters')
@@ -74,14 +91,11 @@ class QuestionParams(QWidget):
         diff = self.diff_cb.currentData()
         cat = self.cat_cb.currentData()
         tp = self.tp_cb.currentData()
-        print(f'Amount: {amount}, Difficulty: {diff}, Category: {cat}, Type: {tp}')
+        # print(f'Amount: {amount}, Difficulty: {diff}, Category: {cat}, Type: {tp}')
 
-        # Init questions from API
-        questions = Questions(qAmount=amount, qCategory=cat, qDifficulty=diff, qType=tp)
-        q_list = questions.questionsList
-        print(questions.questionsList)
-
-        questionDisplay = QuestionDisplay(q_list)
-
-        # Display questions
-        self.main_window.displayWidget(questionDisplay)
+        # Load questions from API client
+        try:
+            questions = Questions(amount=amount, category=cat, difficulty=diff, question_type=tp)
+            self.main_window.displayWidget(QuestionDisplay(questions.questions_list))
+        except OpenTriviaClientError as error:
+            self.show_error(error)
