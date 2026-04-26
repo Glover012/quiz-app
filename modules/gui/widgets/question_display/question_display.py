@@ -1,8 +1,7 @@
-from PySide6.QtWidgets import QVBoxLayout, QWidget, QScrollArea, QPushButton, QLabel
+from PySide6.QtWidgets import QVBoxLayout, QWidget, QScrollArea, QPushButton
 from PySide6.QtCore import Qt
-from .question_widget import QuestionWidget
-from .result_widget import ResultWidget
-from ...questions import Question
+from .items import QuestionWidget, ResultWidget
+from ....questions import Question
 
 class QuestionDisplay(QWidget):
     """

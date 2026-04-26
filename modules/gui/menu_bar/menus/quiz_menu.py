@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ...main_window import MainWindow
 
-from PySide6.QtWidgets import QMainWindow, QMenu
+from PySide6.QtWidgets import QMenu
 from PySide6.QtGui import QAction
 from ...widgets import StartQuiz
 
