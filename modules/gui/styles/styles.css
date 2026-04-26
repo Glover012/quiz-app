@@ -2,26 +2,37 @@
 
 /* Global styles */
 QLabel{
-    font-size: 15px;
-    font-family: Arial;
+    font-size: 17px;
+    font-family: Inter;
 }
 
 QPushButton {
     font-size: 20px;
-    font-family: Arial;
+    font-family: Inter;
+    font-weight: bold;
+    border-radius: 8px;
+    padding: 10px 20px;
+}
+
+QComboBox {
+    font-size: 14px;
+    font-family: Inter;
+}
+
+QRadioButton {
+    font-size: 15x;
+    font-family: Inter;
 }
 
 /* Specific widget styles */
 QLabel#appName {
-    font-size: 40px;
+    font-size: 65px;
     font-weight: bold;
-    border-radius: 10px;
 }
 
 QLabel#welcomeLabel {
-    font-size: 40px;
+    font-size: 50px;
     font-weight: bold;
-    border-radius: 10px;
 }
 
 QLabel#selectParamsLabel {
@@ -32,7 +43,6 @@ QLabel#selectParamsLabel {
 QLabel#quizResultLabel {
     font-size: 20px;
     font-weight: bold;
-    border-radius: 10px;
 }
 
 QLabel#quizScoreLabel {
@@ -41,7 +51,6 @@ QLabel#quizScoreLabel {
 
 QLabel#userGoodAnswersLabel {
     font-size: 15px;
-    font-family: Arial;
 }
 
 QLabel#questionInfoLabel {
@@ -59,13 +68,31 @@ QLabel#errorLabel {
 }
 
 QPushButton#startButton {
-    font-size: 40px;
-    font-family: Arial;
+    font-size: 50px;
+    background-color: #16a34a;
+    color: #ffffff;
+}
+
+QPushButton#startButton:hover {
+    background-color: #15803d;
+}
+
+QPushButton#startButton:pressed {
+    background-color: #166534;
 }
 
 QPushButton#finishQuizButton {
     font-size: 30px;
-    font-family: Arial;
+    background-color: #bc3535;
+    color: #ffffff;
+}
+
+QPushButton#finishQuizButton:hover {
+    background-color: #bc2929;
+}
+
+QPushButton#finishQuizButton:pressed {
+    background-color: #ad1414;
 }
 
 QFrame#questionWidgetFrame {

@@ -48,9 +48,9 @@ class QuestionParams(QWidget):
         QTimer.singleShot(3000, self.error_label.hide)
     
     def paramsWidget(self):
-        select_params_label = QLabel('Select quiz parameters')
-        select_params_label.setObjectName('selectParamsLabel')
-        self.main_layout.addWidget(select_params_label, alignment=Qt.AlignmentFlag.AlignCenter)
+        #select_params_label = QLabel('Select Quiz parameters:')
+        #select_params_label.setObjectName('selectParamsLabel')
+        #self.main_layout.addWidget(select_params_label, alignment=Qt.AlignmentFlag.AlignCenter)
 
         params_widget = QWidget()
         params_layout = QGridLayout()
