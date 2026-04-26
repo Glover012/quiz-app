@@ -30,17 +30,17 @@ QLabel#selectParamsLabel {
 }
 
 QLabel#quizResultLabel {
-    font-size: 30px;
+    font-size: 20px;
     font-weight: bold;
     border-radius: 10px;
 }
 
 QLabel#quizScoreLabel {
-    font-size: 20px;
+    font-size: 15px;
 }
 
 QLabel#userGoodAnswersLabel {
-    font-size: 20px;
+    font-size: 15px;
     font-family: Arial;
 }
 
@@ -79,6 +79,12 @@ QFrame#questionWidgetFrame[answerState='correct'] {
 }
 QFrame#questionWidgetFrame[answerState='incorrect'] {
     border: 2px solid #e74c3c;
+}
+
+QFrame#resultWidgetFrame {
+    border: 2px solid #666666;
+    border-radius: 10px;
+    padding: 5px;
 }
 
 QRadioButton#questionAnswerRadioButton[containAnswer='correct'] {

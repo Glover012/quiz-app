@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QVBoxLayout, QWidget, QScrollArea, QPushButton, QLabel
 from PySide6.QtCore import Qt
 from .question_widget import QuestionWidget
+from .result_widget import ResultWidget
 from ...questions import Question
 
 class QuestionDisplay(QWidget):
@@ -12,19 +13,24 @@ class QuestionDisplay(QWidget):
 
     def __init__(self, questions_list: list[Question]) -> None:
         super().__init__()
-        self.questionsList = questions_list
+        self.questions_list = questions_list
         self.__initLayout()
         self.__initScrollableWidget()
         self.widget_list.clear() # Clear widget list before displaying new questions
+        # Default result values
+        self.total_question_points = 0
+        self.user_points = 0
+        self.user_good_answers = 0
+        # Widget display
         self.displayQuestions(self.scrollable_widget_layout)
         self.addFinishQuizButton()
 
-    def __initLayout(self):
+    def __initLayout(self) -> None:
         """Initialize main widget layout."""
         self.main_layout = QVBoxLayout()
         self.setLayout(self.main_layout)
 
-    def __initScrollableWidget(self):
+    def __initScrollableWidget(self) -> None:
         """Initialize scrollable widget to display questions."""
         self.scrollable_widget = QWidget()
         self.scrollable_widget_layout = QVBoxLayout()
@@ -38,9 +44,9 @@ class QuestionDisplay(QWidget):
         scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
-    def displayQuestions(self, scrollable_widget_layout):
+    def displayQuestions(self, scrollable_widget_layout: QVBoxLayout) -> None:
         """Display questions in scrollable widget."""
-        for question in self.questionsList:
+        for question in self.questions_list:
             question_widget = QuestionWidget(question)
             self.widget_list.append(question_widget)
             question_widget.label.setText( f"{len(self.widget_list)}. {question_widget.label.text()}") # Numbering questions
@@ -48,9 +54,6 @@ class QuestionDisplay(QWidget):
 
     def calculateScore(self):
         """Calculate total points, user points and good answers."""
-        self.total_question_points = 0
-        self.user_points = 0
-        self.user_good_answers = 0
         for widget in self.widget_list:
             self.total_question_points += widget.question.points
             if widget.correct_answer:
@@ -76,21 +79,6 @@ class QuestionDisplay(QWidget):
             # Refresh widget style to apply new properties
             widget.style().polish(widget)
 
-    def displayResults(self):
-        """Display quiz results."""
-        quiz_result_label = QLabel("Results", alignment=Qt.AlignmentFlag.AlignCenter)
-        quiz_result_label.setObjectName('quizResultLabel')
-
-        user_good_answers_label = QLabel(f'Good answers - {self.user_good_answers}/{len(self.questionsList)}', alignment=Qt.AlignmentFlag.AlignCenter)
-        user_good_answers_label.setObjectName('userGoodAnswersLabel')
-
-        quiz_score_label = QLabel(f'Score - {self.user_points}/{self.total_question_points} points. {(self.user_points/float(self.total_question_points*0.01)):.2f}%', alignment=Qt.AlignmentFlag.AlignCenter)
-        quiz_score_label.setObjectName('quizScoreLabel')
-
-        self.main_layout.addWidget(quiz_result_label)
-        self.main_layout.addWidget(quiz_score_label)
-        self.main_layout.addWidget(user_good_answers_label)
-
     def addFinishQuizButton(self):
         """Add button to finish quiz."""
         self.finish_quiz_button = QPushButton('Finish Quiz')
@@ -104,4 +92,10 @@ class QuestionDisplay(QWidget):
         self.finish_quiz_button.deleteLater()
         self.calculateScore()
         self.formatQuestionWidgetsStyle()
-        self.displayResults()
+        result_widget = ResultWidget(
+            len(self.widget_list), 
+            self.total_question_points, 
+            self.user_points, 
+            self.user_good_answers
+            )
+        self.main_layout.addWidget(result_widget)
