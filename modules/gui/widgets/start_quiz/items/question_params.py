@@ -38,14 +38,15 @@ class QuestionParams(QWidget):
         size_policy = self.error_label.sizePolicy()
         size_policy.setRetainSizeWhenHidden(True)
         self.error_label.setSizePolicy(size_policy)
+        self.error_label.setWordWrap(True)
         self.error_label.hide()
         self.main_layout.addWidget(self.error_label)
 
     def show_error(self, error: OpenTriviaClientError):
         self.error_label.setText(f'API Error - {error}')
         self.error_label.show()
-        # Hide label after 3 seconds
-        QTimer.singleShot(3000, self.error_label.hide)
+        # Hide label after 5 seconds
+        QTimer.singleShot(5000, self.error_label.hide)
     
     def paramsWidget(self):
         #select_params_label = QLabel('Select Quiz parameters:')

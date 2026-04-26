@@ -34,6 +34,8 @@ class OpenTriviaClient:
             data = response.json()
             if not data['results']:
                 raise OpenTriviaClientError('No questions found for selected parameters. Try different category, difficulty or type.')
+            elif int(amount) > len(data['results']):
+                raise OpenTriviaClientError('Not enough questions found for the selected parameters. Try lower number.')
             return data
    
         except requests.exceptions.Timeout as error:
