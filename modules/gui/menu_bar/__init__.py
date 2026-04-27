@@ -1,1 +1,1 @@
-from .app_menu import AppMenu
+from .menu_bar import MenuBar

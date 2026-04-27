@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QLabel
 from PySide6.QtCore import Qt
 
+
 class WelcomeLabel(QLabel):
     def __init__(self):
         super().__init__()

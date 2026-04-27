@@ -1,9 +1,11 @@
 from typing import Any
+
 import requests
-from sqlalchemy import Null
+
 
 class OpenTriviaClientError(Exception):
     """Class for handling exceptions when communicating with OpenTDB."""
+
 
 class OpenTriviaClient:
     """Client for communication with OpenTDB API by requests GET method."""
@@ -15,7 +17,7 @@ class OpenTriviaClient:
             amount: int | str = 1,
             category: str = '',
             difficulty: str = '',
-            question_type: str = ''
+            question_type: str = '',
             ) -> dict[str, Any]:
         
         params = {

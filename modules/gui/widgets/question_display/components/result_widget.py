@@ -11,26 +11,32 @@ class ResultWidget(QFrame):
             ) -> None:
         super().__init__()
         self.setObjectName('resultWidgetFrame')
-        self.__initLayout()
+        self._setup_layout()
         self.question_amount = question_amount
         self.total_question_points = total_question_points
         self.user_points = user_points
         self.user_good_answers = user_good_answers
-        self.display_results()
+        self._display_results()
 
-    def __initLayout(self) -> None:
+    def _setup_layout(self) -> None:
         self.main_layout = QVBoxLayout()
         self.setLayout(self.main_layout)
     
-    def display_results(self) -> None:
+    def _display_results(self) -> None:
         """Display quiz results."""
         quiz_result_label = QLabel("Results", alignment=Qt.AlignmentFlag.AlignCenter)
         quiz_result_label.setObjectName('quizResultLabel')
 
-        user_good_answers_label = QLabel(f'Good answers - {self.user_good_answers}/{self.question_amount}', alignment=Qt.AlignmentFlag.AlignCenter)
+        user_good_answers_label = QLabel(
+            f'Good answers - {self.user_good_answers}/{self.question_amount}',
+            alignment=Qt.AlignmentFlag.AlignCenter
+            )
         user_good_answers_label.setObjectName('userGoodAnswersLabel')
         
-        score = f'Score - {self.user_points}/{self.total_question_points} points. {(self.user_points/float(self.total_question_points*0.01)):.2f}%'
+        score = (
+            f'Score - {self.user_points}/{self.total_question_points} points. '
+            f'{(self.user_points/float(self.total_question_points*0.01)):.2f}%'
+            )
         quiz_score_label = QLabel(score, alignment=Qt.AlignmentFlag.AlignCenter)
         quiz_score_label.setObjectName('quizScoreLabel')
 

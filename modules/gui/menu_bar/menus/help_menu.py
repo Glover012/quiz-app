@@ -1,25 +1,28 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from ...main_window import MainWindow
 
 from PySide6.QtWidgets import QMenu, QMessageBox
 from PySide6.QtGui import QAction
+
+if TYPE_CHECKING:
+    from ...main_window import MainWindow
+
 
 class HelpMenu(QMenu):
     def __init__(self, main_window: MainWindow):
         super().__init__()
         self.main_window = main_window
-        self.__setFeatures()
-        self.__initAboutAppAction()
+        self._setup_menu()
+        self._add_action_about_app()
 
-    def __setFeatures(self):
+    def _setup_menu(self):
         self.setTitle('Help')
 
-    def __initAboutAppAction(self):
+    def _add_action_about_app(self):
         about_app = QAction('About app', self.main_window)
-        about_app.triggered.connect(self.pressedAboutApp)
+        about_app.triggered.connect(self._on_about_app_action_triggered)
         self.addAction(about_app)
 
-    def pressedAboutApp(self):
+    def _on_about_app_action_triggered(self):
         QMessageBox.about(self.main_window, 'About app', '''Simple Quiz App that utilise PySide6 GUI.''')
