@@ -5,27 +5,28 @@ from .menu_bar import MenuBar
 
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    """Main application window responsible for switching central widgets."""
+    def __init__(self) -> None:
         super().__init__()
         self._setup_window()
         self._setup_layout()
         self._set_menu_bar()
         self.display_widget(WelcomeLabel())
 
-    def _setup_window(self):
+    def _setup_window(self) -> None:
         self.setWindowTitle('Quiz')
         self.resize(768, 512)
 
-    def _setup_layout(self):
+    def _setup_layout(self) -> None:
         self.main_layout = QVBoxLayout()
         central_widget = QWidget()
         central_widget.setLayout(self.main_layout)
         self.setCentralWidget(central_widget)
 
-    def _set_menu_bar(self):
+    def _set_menu_bar(self) -> None:
         self.setMenuBar(MenuBar(self))
 
-    def display_widget(self, widget: QWidget | QFrame):
+    def display_widget(self, widget: QWidget | QFrame) -> None:
         """Display Widget in MainWindow."""
         if self._is_widget_type_displayed(widget):
             print('Widget is already displayed.')
@@ -41,7 +42,7 @@ class MainWindow(QMainWindow):
         current_widget = current_item.widget() if current_item is not None else None
         return type(current_widget) == type(widget)
         
-    def _clear_window(self):
+    def _clear_window(self) -> None:
         """Delete all widgets from MainWindow."""
         widget_count = self.main_layout.count()
         if widget_count:

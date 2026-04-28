@@ -1,7 +1,10 @@
 from PySide6.QtWidgets import QVBoxLayout, QFrame, QLabel
 from PySide6.QtCore import Qt
 
+
 class ResultWidget(QFrame):
+    """Widget to display quiz results."""
+
     def __init__(
             self, 
             question_amount: int, 

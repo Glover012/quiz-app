@@ -9,28 +9,30 @@ if TYPE_CHECKING:
 
 
 class QuestionWidget(QFrame):
-    def __init__(self, question: Question):
+    """Widget that displays one question and tracks the selected answer."""
+
+    def __init__(self, question: Question) -> None:
         super().__init__()
-        self.question = question
+        self.question: Question = question
         self.setObjectName('questionWidgetFrame')
         self._setup_layout()
         self._add_question_label()
         self._add_question_answers_radio_buttons()
         self._add_question_info_label()
         # Default values
-        self.correct_answer = False
-        self.user_answer = None
+        self.correct_answer: bool = False
+        self.user_answer: str | None = None
 
-    def _setup_layout(self):
+    def _setup_layout(self) -> None:
         self.main_layout = QVBoxLayout()
         self.setLayout(self.main_layout)
 
-    def _add_question_label(self):
+    def _add_question_label(self) -> None:
         self.label = QLabel(self.question.question)
         self.label.setWordWrap(True)
         self.main_layout.addWidget(self.label)
 
-    def _add_question_answers_radio_buttons(self):
+    def _add_question_answers_radio_buttons(self) -> None:
         index = ['a', 'b', 'c', 'd']
         self.a_button_group = QButtonGroup()
         for i, answer in enumerate(self.question.all_answers):
@@ -41,7 +43,7 @@ class QuestionWidget(QFrame):
             self.main_layout.addWidget(button)
         self.a_button_group.buttonClicked.connect(self._on_answer_button_clicked)
 
-    def _add_question_info_label(self):
+    def _add_question_info_label(self) -> None:
         infoLabel = QLabel(
             f'Category: {self.question.category} |'
             f'Difficulty: {self.question.difficulty} |'
@@ -50,7 +52,7 @@ class QuestionWidget(QFrame):
         infoLabel.setObjectName('questionInfoLabel')
         self.main_layout.addWidget(infoLabel)
 
-    def _on_answer_button_clicked(self, button):
+    def _on_answer_button_clicked(self, button: QRadioButton) -> None:
         self.user_answer = button.text()
         if self.question.correct_answer in self.user_answer:
             self.correct_answer = True

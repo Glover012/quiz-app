@@ -1,4 +1,6 @@
-CATEGORIES = {
+"""OpenTDB parameter values used by the quiz setup UI."""
+
+CATEGORIES: dict[str, str] = {
     "Any Category": "",
     "General Knowledge": "9",
     "Entertainment: Books": "10",
@@ -25,13 +27,13 @@ CATEGORIES = {
     "Entertainment: Japanese Anime & Manga": "31",
     "Entertainment: Cartoon & Animations": "32"}
 
-DIFFICULTIES = {
-    "Any difficulty": "", 
-    "Easy": "easy", 
-    "Medium": "medium", 
+DIFFICULTIES: dict[str, str] = {
+    "Any difficulty": "",
+    "Easy": "easy",
+    "Medium": "medium",
     "Hard": "hard"}
 
-QUESTION_TYPES = {
+QUESTION_TYPES: dict[str, str] = {
     "Any type": "",
     "Multiple choice": "multiple",
     "True / False": "boolean"}

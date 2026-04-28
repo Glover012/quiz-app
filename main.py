@@ -2,8 +2,8 @@ import sys, os
 from PySide6.QtWidgets import QApplication
 from modules import MainWindow
 
-def main():
-    """Main function to run the application."""
+def main() -> None:
+    """Start Qt based application."""
     app = QApplication(sys.argv)
     # Set CWD, so that relateive paths work correctly
     os.chdir(os.path.dirname(__file__)) 

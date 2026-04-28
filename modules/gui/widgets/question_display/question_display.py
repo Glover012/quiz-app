@@ -7,17 +7,16 @@ from ....questions import Question
 
 class QuestionDisplay(QWidget):
     """
-    Widget to display questions, handle and check user answers. 
-    Display results and format question widgets accordingly.
+    Displays quiz questions, checks answers and shows the final result.
+    Color question frames based on user answer.
     """
-    widget_list = []
 
     def __init__(self, questions_list: list[Question]) -> None:
         super().__init__()
-        self.questions_list = questions_list
+        self.widget_list: list[QuestionWidget] = []
+        self.questions_list: list[Question] = questions_list
         self._setup_layout()
         self._add_scrollable_widget()
-        self.widget_list.clear() # Clear widget list before displaying new questions
 
         # Default result values
         self.total_question_points = 0
@@ -57,7 +56,7 @@ class QuestionDisplay(QWidget):
                 f"{len(self.widget_list)}. {question_widget.label.text()}")
             scrollable_widget_layout.addWidget(question_widget)
 
-    def _calculate_score(self):
+    def _calculate_score(self) -> None:
         """Calculate total points, user points and good answers."""
         for widget in self.widget_list:
             self.total_question_points += widget.question.points
@@ -65,7 +64,7 @@ class QuestionDisplay(QWidget):
                 self.user_points += widget.question.points
                 self.user_good_answers += 1
 
-    def _format_question_widget_style_post_finish(self):
+    def _format_question_widget_style_post_finish(self) -> None:
         """Format QuestionWidgets frame and button text based on correct/incorrect answer."""
         for widget in self.widget_list:
             # Color widget frames based on user_answer
@@ -84,14 +83,14 @@ class QuestionDisplay(QWidget):
             # Refresh widget style to apply new properties
             widget.style().polish(widget)
 
-    def _add_finish_quiz_button(self):
+    def _add_finish_quiz_button(self) -> None:
         """Add button to finish quiz."""
         self.finish_quiz_button = QPushButton('Finish Quiz')
         self.finish_quiz_button.setObjectName('finishQuizButton')
         self.finish_quiz_button.clicked.connect(self._on_finish_quiz_button_clicked)
         self.main_layout.addWidget(self.finish_quiz_button)
 
-    def _on_finish_quiz_button_clicked(self):
+    def _on_finish_quiz_button_clicked(self) -> None:
         """Handle finish quiz button click, calculate score, format question widgets and display results."""
         print('Clicked finish')
         self.finish_quiz_button.deleteLater()

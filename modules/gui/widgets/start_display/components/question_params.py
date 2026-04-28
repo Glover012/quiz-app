@@ -13,7 +13,9 @@ if TYPE_CHECKING:
 
 
 class QuestionParams(QWidget):
-    def __init__(self, main_window: MainWindow):
+    """Widget for selecting quiz parameters and starting a new quiz."""
+    
+    def __init__(self, main_window: MainWindow) -> None:
         super().__init__()
         self.main_window = main_window
         self._setup_layout()
@@ -21,11 +23,11 @@ class QuestionParams(QWidget):
         self._add_error_label()
         self._add_params_widget()
 
-    def _setup_layout(self):
+    def _setup_layout(self) -> None:
         self.main_layout = QVBoxLayout()
         self.setLayout(self.main_layout)
 
-    def _add_start_button_widget(self):
+    def _add_start_button_widget(self) -> None:
         sb_widget = QWidget()
         sb_layout = QVBoxLayout()
         sb_widget.setLayout(sb_layout)
@@ -35,7 +37,7 @@ class QuestionParams(QWidget):
         self.sb.clicked.connect(self._on_start_button_clicked)
         self.main_layout.addWidget(sb_widget, alignment=Qt.AlignmentFlag.AlignCenter)
 
-    def _add_error_label(self):
+    def _add_error_label(self) -> None:
         self.error_label = QLabel(alignment=Qt.AlignmentFlag.AlignCenter)
         self.error_label.setObjectName('errorLabel')
         # Set size policy, to avoid widets movement on the screen when error label shows up
@@ -46,13 +48,13 @@ class QuestionParams(QWidget):
         self.error_label.hide()
         self.main_layout.addWidget(self.error_label)
 
-    def _show_error(self, error: OpenTriviaClientError):
+    def _show_error(self, error: OpenTriviaClientError) -> None:
         self.error_label.setText(f'API Error - {error}')
         self.error_label.show()
         # Hide label after 5 seconds
         QTimer.singleShot(5000, self.error_label.hide)
 
-    def _add_params_widget(self):
+    def _add_params_widget(self) -> None:
         #select_params_label = QLabel('Select Quiz parameters:')
         #select_params_label.setObjectName('selectParamsLabel')
         #self.main_layout.addWidget(select_params_label, alignment=Qt.AlignmentFlag.AlignCenter)
@@ -103,7 +105,7 @@ class QuestionParams(QWidget):
 
         self.main_layout.addWidget(params_widget, alignment=Qt.AlignmentFlag.AlignCenter)
 
-    def _on_start_button_clicked(self):
+    def _on_start_button_clicked(self) -> None:
         amount = self.question_amount_cb.currentText()
         diff = self.question_difficulty_cb.currentData()
         cat = self.question_category_cb.currentData()

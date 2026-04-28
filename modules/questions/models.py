@@ -7,14 +7,16 @@ from .opentdb_client import OpenTriviaClient, OpenTriviaClientError
 
 
 class Question:
+    """Represents a single quiz question with features."""
+    
     def __init__(
-            self, tp: str, 
-            difficulty: str, 
-            category: str, 
-            question: str, 
-            correct_answer: str, 
-            incorrect_answers: list, 
-            all_answers: list, 
+            self, tp: str,
+            difficulty: str,
+            category: str,
+            question: str,
+            correct_answer: str,
+            incorrect_answers: list[str],
+            all_answers: list[str],
             points: int,
             ) -> None:
         self.tp = tp
@@ -28,16 +30,16 @@ class Question:
 
 
 class Questions:
-    questions_list = []
+    """Loads questions from OpenTDB and converts them into Question objects."""
 
     def __init__(
-            self, 
-            amount: str | int = 1, 
-            category: str = '', 
-            difficulty: str = '', 
+            self,
+            amount: str | int = 1,
+            category: str = '',
+            difficulty: str = '',
             question_type: str = '',
             ) -> None:
-        self.questions_list.clear() # Clear questions_list before adding new questions
+        self.questions_list: list[Question] = []
         self.amount = amount
         self.category = category
         self.difficulty = difficulty
@@ -60,7 +62,8 @@ class Questions:
             raise error
 
     def _questions_data_to_question_objects(self, questions_data: dict[str, Any]) -> None:
-        "Question JSON data from API to Question objects. Add Question objects to questions_list"
+        """Convert raw API question data into Question objects."""
+
         for question_params in questions_data["results"]:
             # Question parameters to variables, html.unescape to format html symbols
             tp = question_params["type"]
@@ -71,7 +74,7 @@ class Questions:
             incorrect_answers = [html.unescape(answer) for answer in question_params["incorrect_answers"]]
 
             # Set all_answers, mix answers for multiple choice
-            all_answers = []
+            all_answers: list[str] = []
             if tp == 'boolean':
                 all_answers = ["True", "False"]
             elif tp == 'multiple':

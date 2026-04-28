@@ -10,19 +10,19 @@ if TYPE_CHECKING:
 
 
 class HelpMenu(QMenu):
-    def __init__(self, main_window: MainWindow):
+    def __init__(self, main_window: MainWindow) -> None:
         super().__init__()
         self.main_window = main_window
         self._setup_menu()
         self._add_action_about_app()
 
-    def _setup_menu(self):
+    def _setup_menu(self) -> None:
         self.setTitle('Help')
 
-    def _add_action_about_app(self):
+    def _add_action_about_app(self) -> None:
         about_app = QAction('About app', self.main_window)
         about_app.triggered.connect(self._on_about_app_action_triggered)
         self.addAction(about_app)
 
-    def _on_about_app_action_triggered(self):
+    def _on_about_app_action_triggered(self) -> None:
         QMessageBox.about(self.main_window, 'About app', '''Simple Quiz App that utilise PySide6 GUI.''')

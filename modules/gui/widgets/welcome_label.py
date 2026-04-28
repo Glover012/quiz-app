@@ -3,7 +3,7 @@ from PySide6.QtCore import Qt
 
 
 class WelcomeLabel(QLabel):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.setText('Welcome to Quiz App!')
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)

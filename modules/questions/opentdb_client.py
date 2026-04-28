@@ -1,16 +1,16 @@
-from typing import Any
+from typing import Any, ClassVar
 
 import requests
 
 
 class OpenTriviaClientError(Exception):
-    """Class for handling exceptions when communicating with OpenTDB."""
+    """Raised when fetching questions from OpenTDB fails."""
 
 
 class OpenTriviaClient:
-    """Client for communication with OpenTDB API by requests GET method."""
+    """HTTP client for fetching quiz questions from the OpenTDB API."""
 
-    BASE_URL = 'https://opentdb.com/api.php'
+    BASE_URL: ClassVar[str] = 'https://opentdb.com/api.php'
 
     def get_questions_data(
             self,
@@ -19,7 +19,7 @@ class OpenTriviaClient:
             difficulty: str = '',
             question_type: str = '',
             ) -> dict[str, Any]:
-        
+        """Load quiz questions data from OpenTDB API based on given parameters."""
         params = {
             'amount' : amount
         }
