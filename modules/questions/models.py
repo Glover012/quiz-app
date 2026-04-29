@@ -1,9 +1,12 @@
 from typing import Any
 
+import logging
 import html
 import random
 
 from .opentdb_client import OpenTriviaClient, OpenTriviaClientError
+
+logger = logging.getLogger(__name__)
 
 
 class Question:
@@ -101,3 +104,6 @@ class Questions:
                 incorrect_answers, 
                 all_answers, 
                 points))
+    
+        logger.debug("Converted %s questions into Question objects.", len(self.questions_list))
+

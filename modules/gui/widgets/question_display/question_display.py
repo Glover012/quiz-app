@@ -1,8 +1,12 @@
+import logging
+
 from PySide6.QtWidgets import QVBoxLayout, QWidget, QScrollArea, QPushButton
 from PySide6.QtCore import Qt
 
 from .components import QuestionWidget, ResultWidget
 from ....questions import Question
+
+logger = logging.getLogger(__name__)
 
 
 class QuestionDisplay(QWidget):
@@ -92,9 +96,16 @@ class QuestionDisplay(QWidget):
 
     def _on_finish_quiz_button_clicked(self) -> None:
         """Handle finish quiz button click, calculate score, format question widgets and display results."""
-        print('Clicked finish')
+        logger.debug("Finish quiz button clicked.")
         self.finish_quiz_button.deleteLater()
         self._calculate_score()
+
+        logger.info(
+            "Quiz finished: good_answers=%s/%s, points=%s/%s",
+            self.user_good_answers, len(self.widget_list),
+            self.user_points, self.total_question_points,
+            )
+
         self._format_question_widget_style_post_finish()
         result_widget = ResultWidget(
             len(self.widget_list), 

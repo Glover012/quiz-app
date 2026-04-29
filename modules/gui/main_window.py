@@ -1,7 +1,11 @@
+import logging
+
 from PySide6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QFrame
 
 from .widgets import WelcomeLabel
 from .menu_bar import MenuBar
+
+logger = logging.getLogger(__name__)
 
 
 class MainWindow(QMainWindow):
@@ -29,7 +33,7 @@ class MainWindow(QMainWindow):
     def display_widget(self, widget: QWidget | QFrame) -> None:
         """Display Widget in MainWindow."""
         if self._is_widget_type_displayed(widget):
-            print('Widget is already displayed.')
+            logger.debug("Widget is already displayed: %s", type(widget).__name__)
         else:
             self._clear_window()
             self.main_layout.addWidget(widget)
@@ -52,4 +56,4 @@ class MainWindow(QMainWindow):
                 if widget is not None:
                     self.main_layout.removeWidget(widget)
                     widget.deleteLater()
-        print(f'{'Deleted ' if widget_count else ''}Widget Number: {widget_count}')
+        logger.debug("Deleted widget count: %s", widget_count)

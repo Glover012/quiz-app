@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import logging
+
 from typing import TYPE_CHECKING
 
 from PySide6.QtWidgets import QMenu
@@ -9,6 +11,8 @@ from ...widgets import StartDisplay
 
 if TYPE_CHECKING:
     from ...main_window import MainWindow
+
+logger = logging.getLogger(__name__)
 
 
 class QuizMenu(QMenu):
@@ -35,9 +39,9 @@ class QuizMenu(QMenu):
         self.addAction(exit)
     
     def _on_start_quiz_action_triggered(self) -> None:
-        print('pressedStartQuiz')
+        logger.debug("Start quiz action triggered.")
         self.main_window.display_widget(StartDisplay(self.main_window))
     
     def _on_exit_action_triggered(self) -> None:
-        print('Exit')
+        logger.info("Exit action triggered.")
         self.main_window.close()

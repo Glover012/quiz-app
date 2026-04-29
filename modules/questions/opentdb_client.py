@@ -1,6 +1,9 @@
 from typing import Any, ClassVar
 
+import logging
 import requests
+
+logger = logging.getLogger(__name__)
 
 
 class OpenTriviaClientError(Exception):
@@ -30,8 +33,11 @@ class OpenTriviaClient:
         if question_type:
             params['type'] = question_type
 
+        logger.debug("Fetching questions from OpenTDB with params: %s", params)
+
         try:
             response = requests.get(self.BASE_URL, params=params, timeout=10)
+            logger.debug("OpenTDB response status: %s", response.status_code)
             response.raise_for_status()
             data = response.json()
             if not data['results']:

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import logging
+
 from typing import TYPE_CHECKING
 
 from PySide6.QtWidgets import QVBoxLayout, QGridLayout, QWidget, QLabel, QPushButton, QComboBox
@@ -10,6 +12,8 @@ from ...question_display import QuestionDisplay
 
 if TYPE_CHECKING:
     from ....main_window import MainWindow
+
+logger = logging.getLogger(__name__)
 
 
 class QuestionParams(QWidget):
@@ -110,11 +114,20 @@ class QuestionParams(QWidget):
         diff = self.question_difficulty_cb.currentData()
         cat = self.question_category_cb.currentData()
         tp = self.question_type_cb.currentData()
-        # print(f'Amount: {amount}, Difficulty: {diff}, Category: {cat}, Type: {tp}')
+
+        logger.debug(
+            "Question params selected: amount=%s, difficulty=%s, category=%s, type=%s",
+            amount,
+            diff,
+            cat,
+            tp,
+            )
 
         # Load questions from API client
         try:
             questions = Questions(amount=amount, category=cat, difficulty=diff, question_type=tp)
+            logger.debug("Questions loaded successfully. Number of questions: %s", len(questions.questions_list))
             self.main_window.display_widget(QuestionDisplay(questions.questions_list))
         except OpenTriviaClientError as error:
+            logger.warning("Failed to load questions: %s", error)
             self._show_error(error)
