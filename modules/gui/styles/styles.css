@@ -1,0 +1,123 @@
+/* Stylesheet for the quiz application. */
+
+/* Global styles */
+QLabel{
+    font-size: 17px;
+    font-family: Inter;
+}
+
+QPushButton {
+    font-size: 20px;
+    font-family: Inter;
+    font-weight: bold;
+    border-radius: 8px;
+    padding: 10px 20px;
+}
+
+QComboBox {
+    font-size: 14px;
+    font-family: Inter;
+}
+
+QRadioButton {
+    font-size: 15px;
+    font-family: Inter;
+}
+
+/* Specific widget styles */
+QLabel#appName {
+    font-size: 65px;
+    font-weight: bold;
+}
+
+QLabel#welcomeLabel {
+    font-size: 50px;
+    font-weight: bold;
+}
+
+QLabel#selectParamsLabel {
+    font-size: 20px;
+    border-radius: 10px;
+}
+
+QLabel#quizResultLabel {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+QLabel#quizScoreLabel {
+    font-size: 15px;
+}
+
+QLabel#userGoodAnswersLabel {
+    font-size: 15px;
+}
+
+QLabel#questionInfoLabel {
+    font-size: 10px;
+    font-style: italic;
+    color: #646464;
+}
+
+QLabel#errorLabel {
+    color: #fca5a5;
+    background-color: #3f1d1d;
+    border: 1px solid #ef4444;
+    border-radius: 6px;
+    padding: 8px;
+}
+
+QPushButton#startButton {
+    font-size: 50px;
+    background-color: #16a34a;
+    color: #ffffff;
+}
+
+QPushButton#startButton:hover {
+    background-color: #15803d;
+}
+
+QPushButton#startButton:pressed {
+    background-color: #166534;
+}
+
+QPushButton#finishQuizButton {
+    font-size: 30px;
+    background-color: #bc3535;
+    color: #ffffff;
+}
+
+QPushButton#finishQuizButton:hover {
+    background-color: #bc2929;
+}
+
+QPushButton#finishQuizButton:pressed {
+    background-color: #ad1414;
+}
+
+QFrame#questionWidgetFrame {
+    border: 2px solid #666666;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+QFrame#questionWidgetFrame[answerState='correct'] {
+    border: 2px solid #2ecc71;
+}
+QFrame#questionWidgetFrame[answerState='incorrect'] {
+    border: 2px solid #e74c3c;
+}
+
+QFrame#resultWidgetFrame {
+    border: 2px solid #666666;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+QRadioButton#questionAnswerRadioButton[containAnswer='correct'] {
+    color: #2ecc71;
+}
+
+QRadioButton#questionAnswerRadioButton[containAnswer='incorrect'] {
+    color: #e74c3c;
+}

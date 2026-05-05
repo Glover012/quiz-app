@@ -1,0 +1,59 @@
+import logging
+
+from PySide6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QFrame
+
+from .widgets import WelcomeLabel
+from .menu_bar import MenuBar
+
+logger = logging.getLogger(__name__)
+
+
+class MainWindow(QMainWindow):
+    """Main application window responsible for switching central widgets."""
+    def __init__(self) -> None:
+        super().__init__()
+        self._setup_window()
+        self._setup_layout()
+        self._set_menu_bar()
+        self.display_widget(WelcomeLabel())
+
+    def _setup_window(self) -> None:
+        self.setWindowTitle('Quiz')
+        self.resize(768, 512)
+
+    def _setup_layout(self) -> None:
+        self.main_layout = QVBoxLayout()
+        central_widget = QWidget()
+        central_widget.setLayout(self.main_layout)
+        self.setCentralWidget(central_widget)
+
+    def _set_menu_bar(self) -> None:
+        self.setMenuBar(MenuBar(self))
+
+    def display_widget(self, widget: QWidget | QFrame) -> None:
+        """Display Widget in MainWindow."""
+        if self._is_widget_type_displayed(widget):
+            logger.debug("Widget is already displayed: %s", type(widget).__name__)
+        else:
+            self._clear_window()
+            self.main_layout.addWidget(widget)
+
+    def _is_widget_type_displayed(self, widget: QWidget) -> bool:
+        """Checks if widget type is already displayed in MainWindow."""
+        if self.main_layout.count() == 0:
+            return False
+        current_item = self.main_layout.itemAt(0)
+        current_widget = current_item.widget() if current_item is not None else None
+        return type(current_widget) == type(widget)
+        
+    def _clear_window(self) -> None:
+        """Delete all widgets from MainWindow."""
+        widget_count = self.main_layout.count()
+        if widget_count:
+            for i in reversed(range(self.main_layout.count())):
+                item = self.main_layout.itemAt(i)
+                widget = item.widget() if item is not None else None
+                if widget is not None:
+                    self.main_layout.removeWidget(widget)
+                    widget.deleteLater()
+        logger.debug("Deleted widget count: %s", widget_count)
