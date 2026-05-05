@@ -71,7 +71,7 @@ Supported values:
 
 #### 💻 Logging level in Windows PowerShell
 ```powershell
-$env:QUIZ_APP_LOG_LEVEL = "DEBUG"
+$env:QUIZ_APP_LOG_LEVEL="DEBUG"
 ```
 
 ## ▶️ Running app
