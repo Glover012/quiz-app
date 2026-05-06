@@ -93,7 +93,7 @@ python main.py
     └── README.md
 
 ## 📌 Project status
-The application is functional. The main planned improvement is adding unit tests.
+The application is functional and includes unit tests for the OpenTDB API client.
 
 ## 🛣 Roadmap
 Planned improvements:
