@@ -17,6 +17,7 @@ A simple quiz application built in Python with a PySide6 GUI.
   - [📌 Project status](#-project-status)
   - [🛣 Roadmap](#-roadmap)
   - [🧪 Tests](#-tests)
+      - [💻 Running tests in Windows PowerShell](#-running-tests-in-windows-powershell)
   - [📄 License](#-license)
   - [👤 Author contact](#-author-contact)
   - [⭐ Support](#-support)
@@ -97,10 +98,16 @@ The application is functional. The main planned improvement is adding unit tests
 ## 🛣 Roadmap
 Planned improvements:
 - [x] Initial basic version
-- [ ] Unit tests
+- [x] Unit tests
 
 ## 🧪 Tests
-Unit tests are not implemented yet. They are planned for a future version.
+The application includes unit tests for the OpenTDB API client and its error handling.
+
+#### 💻 Running tests in Windows PowerShell
+```powershell
+cd quiz-app
+python -m unittest discover -s tests
+```
 
 ## 📄 License
 This project is licensed under the MIT License. See the `LICENSE` file for more information.
