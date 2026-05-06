@@ -23,6 +23,7 @@ class OpenTriviaClient:
             question_type: str = '',
             ) -> dict[str, Any]:
         """Load quiz questions data from OpenTDB API based on given parameters."""
+
         params = {
             'amount' : amount
         }
@@ -57,3 +58,13 @@ class OpenTriviaClient:
 
         except ValueError as error:
             raise OpenTriviaClientError('OpenTDB returned invalid JSON.') from error
+
+        except (KeyError, TypeError) as error:
+            raise OpenTriviaClientError('OpenTDB returned unexpected format.') from error
+        
+        except OpenTriviaClientError:
+            raise
+
+        except Exception as error:
+            raise OpenTriviaClientError('Unexpected error occurred.') from error
+        
