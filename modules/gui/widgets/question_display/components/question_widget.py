@@ -39,6 +39,7 @@ class QuestionWidget(QFrame):
             button = QRadioButton(
                 f'{f'{index[i]}. ' if self.question.tp == "multiple" else ""}{answer}')
             button.setObjectName('questionAnswerRadioButton')
+            button.setProperty("user_answer", answer)
             self.a_button_group.addButton(button)
             self.main_layout.addWidget(button)
         self.a_button_group.buttonClicked.connect(self._on_answer_button_clicked)
@@ -53,8 +54,8 @@ class QuestionWidget(QFrame):
         self.main_layout.addWidget(infoLabel)
 
     def _on_answer_button_clicked(self, button: QRadioButton) -> None:
-        self.user_answer = button.text()
-        if self.question.correct_answer in self.user_answer:
+        self.user_answer = button.property("user_answer")
+        if self.question.correct_answer == self.user_answer:
             self.correct_answer = True
         else:
             self.correct_answer = False

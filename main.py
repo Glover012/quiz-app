@@ -3,6 +3,8 @@ import os
 import sys
 
 from PySide6.QtWidgets import QApplication
+from PySide6.QtGui import QFont
+
 from modules import MainWindow
 
 logger = logging.getLogger(__name__)
@@ -21,8 +23,11 @@ def main() -> None:
     # Set up logging
     configure_logging()
     logger.info("Starting Quiz-App")
-
+    
     app = QApplication(sys.argv)
+    # Set global font
+    font = QFont("Inter", 12)
+    app.setFont(font)
     # Set CWD, so that relative paths work correctly
     os.chdir(os.path.dirname(__file__))
     logger.debug("Set CWD to %s", os.getcwd())

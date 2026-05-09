@@ -101,7 +101,7 @@ Planned improvements:
 - [x] Unit tests
 
 ## 🧪 Tests
-The application includes unit tests for the OpenTDB API client and its error handling.
+The application includes unit tests for the question models, the OpenTDB API client, and API error handling.
 
 #### 💻 Running tests in Windows PowerShell
 ```powershell
