@@ -1,7 +1,7 @@
 import logging
 
 from PySide6.QtWidgets import QVBoxLayout, QWidget, QScrollArea, QPushButton
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal, Slot
 
 from .components import QuestionWidget, ResultWidget
 from ....questions import Question
@@ -14,6 +14,8 @@ class QuestionDisplay(QWidget):
     Displays quiz questions, checks answers and shows the final result.
     Color question frames based on user answer.
     """
+
+    repeat_button_clicked = Signal()
 
     def __init__(self, questions_list: list[Question]) -> None:
         super().__init__()
@@ -94,11 +96,15 @@ class QuestionDisplay(QWidget):
         self.finish_quiz_button.clicked.connect(self._on_finish_quiz_button_clicked)
         self.main_layout.addWidget(self.finish_quiz_button)
 
+    @Slot()
     def _on_finish_quiz_button_clicked(self) -> None:
         """Handle finish quiz button click, calculate score, format question widgets and display results."""
         logger.debug("Finish quiz button clicked.")
         self.finish_quiz_button.deleteLater()
         self._calculate_score()
+        self._format_question_widget_style_post_finish()
+        self._display_result_widget()
+        self._add_repeat_quiz_button()
 
         logger.info(
             "Quiz finished: good_answers=%s/%s, points=%s/%s",
@@ -106,11 +112,17 @@ class QuestionDisplay(QWidget):
             self.user_points, self.total_question_points,
             )
 
-        self._format_question_widget_style_post_finish()
-        result_widget = ResultWidget(
+    def _display_result_widget(self):
+        self.result_widget = ResultWidget(
             len(self.widget_list), 
             self.total_question_points, 
             self.user_points, 
             self.user_good_answers
             )
-        self.main_layout.addWidget(result_widget)
+        self.main_layout.addWidget(self.result_widget)
+
+    def _add_repeat_quiz_button(self):
+        self.repeat_quiz_button = QPushButton('Repeat Quiz')
+        self.repeat_quiz_button.setObjectName('repeatQuizButton')
+        self.repeat_quiz_button.clicked.connect(self.repeat_button_clicked.emit)
+        self.main_layout.addWidget(self.repeat_quiz_button)

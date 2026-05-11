@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QVBoxLayout, QWidget, QLabel
 from PySide6.QtCore import Qt
 
 
-class AppName(QWidget):
+class AppNameWidget(QWidget):
     def __init__(self) -> None:
         super().__init__()
         self._setup_layout()

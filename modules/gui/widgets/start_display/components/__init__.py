@@ -1,2 +1,3 @@
-from .app_name import AppName
-from .question_params import QuestionParams
+from .app_name_widget import AppNameWidget
+from .start_button_widget import StartButtonWidget
+from .question_params_widget import QuestionParamsWidget

@@ -91,6 +91,20 @@ QPushButton#finishQuizButton:pressed {
     background-color: #ad1414;
 }
 
+QPushButton#repeatQuizButton {
+    font-size: 30px;
+    background-color: #F7C948;
+    color: #3A2A00;
+}
+
+QPushButton#repeatQuizButton:hover {
+    background-color: #E0A800;
+}
+
+QPushButton#repeatQuizButton:pressed {
+    background-color: #B88700;
+}
+
 QFrame#questionWidgetFrame {
     border: 2px solid #666666;
     border-radius: 10px;

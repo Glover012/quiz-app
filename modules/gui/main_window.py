@@ -1,21 +1,28 @@
 import logging
 
-from PySide6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QFrame
+from PySide6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QFrame, QMessageBox
+from PySide6.QtCore import Slot, Signal
 
-from .widgets import WelcomeLabel
-from .menu_bar import MenuBar
+from .widgets import WelcomeLabel, ErrorLabel, StartDisplay, QuestionDisplay
+from .menu_bar import MenuBar, MenuActionsSignals
+from .workers import QuestionLoader, WorkerThreadController, WorkerThreadControllerError
+from ..questions import OpenTriviaClientError, Questions
 
 logger = logging.getLogger(__name__)
 
 
 class MainWindow(QMainWindow):
-    """Main application window responsible for switching central widgets."""
+    """
+    Main application window. Central application points.
+    MainWindow is responsible for full application control.
+    """
+
     def __init__(self) -> None:
         super().__init__()
         self._setup_window()
         self._setup_layout()
         self._set_menu_bar()
-        self.display_widget(WelcomeLabel())
+        self._display_widget(WelcomeLabel())
 
     def _setup_window(self) -> None:
         self.setWindowTitle('Quiz')
@@ -23,15 +30,84 @@ class MainWindow(QMainWindow):
 
     def _setup_layout(self) -> None:
         self.main_layout = QVBoxLayout()
-        central_widget = QWidget()
-        central_widget.setLayout(self.main_layout)
-        self.setCentralWidget(central_widget)
+        self.central_widget = QWidget()
+        self.central_widget.setLayout(self.main_layout)
+        self.setCentralWidget(self.central_widget)
 
     def _set_menu_bar(self) -> None:
-        self.setMenuBar(MenuBar(self))
+        self.menu_bar = MenuBar()
+        # Connects Signal from MenuBar
+        self.menu_bar.action_requested.connect(self._handle_menu_actions) 
+        self.setMenuBar(self.menu_bar)
 
-    def display_widget(self, widget: QWidget | QFrame) -> None:
-        """Display Widget in MainWindow."""
+    @Slot(object)
+    def _handle_menu_actions(self, action: MenuActionsSignals):
+        match action:
+            case MenuActionsSignals.SHOW_START_DISPLAY:
+                self._start_display_requested()
+            case MenuActionsSignals.EXIT_APP:
+                self.close()
+            case MenuActionsSignals.ABOUT_APP:
+                QMessageBox.about(self, 'About app', '''Simple Quiz App that utilise PySide6 GUI.''')
+
+    @Slot()
+    def _start_display_requested(self):
+        self.start_display = StartDisplay()
+        # Connect start_quiz_requested signal from start_display
+        self.start_display.start_quiz_requested.connect(self._load_questions)
+        self._display_widget(self.start_display)
+
+    @Slot(object)
+    def _on_error(self, error: OpenTriviaClientError | WorkerThreadControllerError) -> None:
+        self.start_display.start_error_returned.emit()
+        self._display_error(error)
+
+    def _display_error(self, error: OpenTriviaClientError | WorkerThreadControllerError) -> None:
+        """Display overlay label with error."""
+        self.error_label = ErrorLabel(self.central_widget, error)
+        self.error_label.setGeometry(20, 20, self.central_widget.width() - 40, 50)
+        self.error_label.show_error()
+        self.error_label.raise_()
+
+    @Slot()
+    def _display_loading_screen(self):
+        pass
+
+    @Slot()
+    def _hide_loading_screen(self):
+        pass
+
+    @Slot(dict)
+    def _load_questions(self, question_params) -> None:
+        """Start QuestionLoader worker."""
+        # Connect signals before init thread_controller,
+        # due to constructur strucutre
+        try:
+            # Connect worker error signal
+            self.question_loader = QuestionLoader(question_params)
+            self.question_loader.error.connect(self._on_error)
+            self.question_loader.loaded.connect(self._on_questions_loaded)
+            self.thread_controller = WorkerThreadController(self.question_loader)
+            # Connect thread controller error signal
+            self.thread_controller.thread_error.connect(self._on_error)
+            # Connect loading screen signals
+            self.thread_controller.thread_started.connect(self._display_loading_screen)
+            self.thread_controller.thread_finished.connect(self._hide_loading_screen)
+            # Start thread
+            self.thread_controller.run_thread()
+        except (OpenTriviaClientError, WorkerThreadControllerError) as error:
+            self._on_error(error)
+
+    @Slot(Questions)
+    def _on_questions_loaded(self, questions: Questions):
+        """Display questions in QuestionDisplay."""
+        self.question_display = QuestionDisplay(questions.questions_list)
+        self.question_display.repeat_button_clicked.connect(self._start_display_requested)
+        self._display_widget(self.question_display)
+        logger.debug("Questions loaded successfully. Number of questions: %s", len(questions.questions_list))
+
+    def _display_widget(self, widget: QWidget | QFrame) -> None:
+        """Display external Widget in MainWindow."""
         if self._is_widget_type_displayed(widget):
             logger.debug("Widget is already displayed: %s", type(widget).__name__)
         else:
