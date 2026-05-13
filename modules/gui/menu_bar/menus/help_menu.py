@@ -1,19 +1,16 @@
 import logging
 
-from PySide6.QtWidgets import QMenu, QMenuBar
+from PySide6.QtWidgets import QMenu
 from PySide6.QtGui import QAction
 from PySide6.QtCore import Signal, Slot
 
-from ..menu_actions_signals import MenuActionsSignals
+from ..menu_actions import MenuActions
 
 logger = logging.getLogger(__name__)
 
 
 class HelpMenu(QMenu):
-    """
-    Help Menu in MenuBar. On action triggered emit action_requested Signal.
-    Corresponding signals are stored in MenuActions.
-    """
+    """Help menu that emits action requests for help commands."""
 
     action_requested = Signal(object)
 
@@ -32,5 +29,5 @@ class HelpMenu(QMenu):
 
     @Slot()
     def _on_about_app_action_triggered(self) -> None:
-        self.action_requested.emit(MenuActionsSignals.ABOUT_APP)
+        self.action_requested.emit(MenuActions.ABOUT_APP)
         logger.debug("About app action triggered.")

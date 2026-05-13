@@ -5,7 +5,7 @@ from .menus import QuizMenu, HelpMenu
 
 
 class MenuBar(QMenuBar):
-    """Class that describes MenuBar for MainWindow."""
+    """Application menu bar that forwards menu actions signals."""
 
     action_requested = Signal(object)
 

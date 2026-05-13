@@ -1,3 +1,3 @@
 from .app_name_widget import AppNameWidget
 from .start_button_widget import StartButtonWidget
-from .question_params_widget import QuestionParamsWidget
+from .question_params_widget import QuestionParamsWidget, QuestionParams

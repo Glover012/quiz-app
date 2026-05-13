@@ -10,10 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class QuestionDisplay(QWidget):
-    """
-    Displays quiz questions, checks answers and shows the final result.
-    Color question frames based on user answer.
-    """
+    """Display quiz questions, evaluate answers, and show the final result."""
 
     repeat_button_clicked = Signal()
 
@@ -112,7 +109,7 @@ class QuestionDisplay(QWidget):
             self.user_points, self.total_question_points,
             )
 
-    def _display_result_widget(self):
+    def _display_result_widget(self) -> None:
         self.result_widget = ResultWidget(
             len(self.widget_list), 
             self.total_question_points, 
@@ -121,7 +118,7 @@ class QuestionDisplay(QWidget):
             )
         self.main_layout.addWidget(self.result_widget)
 
-    def _add_repeat_quiz_button(self):
+    def _add_repeat_quiz_button(self) -> None:
         self.repeat_quiz_button = QPushButton('Repeat Quiz')
         self.repeat_quiz_button.setObjectName('repeatQuizButton')
         self.repeat_quiz_button.clicked.connect(self.repeat_button_clicked.emit)

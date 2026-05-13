@@ -1,20 +1,18 @@
 from PySide6.QtCore import QObject, Signal, Slot
 
+from ..widgets import QuestionParams
 from ...questions.models import Questions
 from ...questions.opentdb_client import OpenTriviaClientError
 
 
 class QuestionLoader(QObject):
-    """
-    Object responsible for loading questions. Emit signal, based on load_questions result.
-    Object shall be run by designated WorkerThreadController.
-    """
+    """Worker object that loads questions and emits success or error signals."""
 
     loaded = Signal(Questions)
     error = Signal(OpenTriviaClientError)
     finished = Signal()
 
-    def __init__(self, params: dict[str, str]) -> None:
+    def __init__(self, params: QuestionParams) -> None:
         super().__init__()
         self.amount = params["amount"]
         self.category = params["category"]
@@ -22,7 +20,7 @@ class QuestionLoader(QObject):
         self.question_type = params["question_type"]
 
     @Slot()
-    def run(self) -> Signal | None:
+    def run(self) -> None:
         try:
             questions = self._load_questions()
             self.loaded.emit(questions)

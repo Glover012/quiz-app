@@ -4,13 +4,13 @@ from PySide6.QtWidgets import QMenu
 from PySide6.QtGui import QAction
 from PySide6.QtCore import Signal, Slot
 
-from ..menu_actions_signals import MenuActionsSignals
+from ..menu_actions import MenuActions
 
 logger = logging.getLogger(__name__)
 
 
 class QuizMenu(QMenu):
-    """Quiz Menu in MenuBar."""
+    """Quiz menu that emits action requests for quiz commands."""
 
     action_requested = Signal(object)
 
@@ -31,7 +31,7 @@ class QuizMenu(QMenu):
 
     @Slot()
     def _on_start_quiz_action_triggered(self) -> None:
-        self.action_requested.emit(MenuActionsSignals.SHOW_START_DISPLAY)
+        self.action_requested.emit(MenuActions.SHOW_START_DISPLAY)
         logger.debug("Start quiz action triggered.")
 
     def _add_exit_action(self) -> None:
@@ -42,5 +42,5 @@ class QuizMenu(QMenu):
     
     @Slot()
     def _on_exit_action_triggered(self) -> None:
-        self.action_requested.emit(MenuActionsSignals.EXIT_APP)
+        self.action_requested.emit(MenuActions.EXIT_APP)
         logger.info("Exit action triggered.")

@@ -20,7 +20,7 @@ class StartDisplay(QWidget):
         self.main_layout = QVBoxLayout()
         self.setLayout(self.main_layout)
 
-    def _setup_widgets(self):
+    def _setup_widgets(self) -> None:
         self.app_name = AppNameWidget()
         self.start_button = StartButtonWidget()
         # When start_button_pressed emit signal
@@ -35,6 +35,6 @@ class StartDisplay(QWidget):
         self.main_layout.addWidget(self.question_params)
 
     @Slot()
-    def _start_quiz_requested(self):
+    def _start_quiz_requested(self) -> None:
         self.start_quiz_requested.emit(self.question_params.get_params())
 

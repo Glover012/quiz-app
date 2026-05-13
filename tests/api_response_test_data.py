@@ -1,8 +1,8 @@
 """OpenTDB API test response data. https://opentdb.com/api.php?amount=10"""
 
-from typing import Any
+from modules.questions import OpenTriviaAPIResponseFormat
 
-QUESTION_TEST_DATA: dict[str, Any] = {
+QUESTION_TEST_DATA: OpenTriviaAPIResponseFormat = {
   "response_code": 0,
   "results": [
     {

@@ -14,9 +14,8 @@ class WorkerThreadControllerError(Exception):
 
 class WorkerThreadController(QObject):
     """
-    Thread controller for a single worker instance.
-    When initialized setup thread and run worker.
-    Raise WorkerThreadControllerError when error.
+    Run QThread for one worker and clean it up after completion. 
+    Emit thread related signals.
     """
 
     thread_started = Signal()
@@ -29,11 +28,12 @@ class WorkerThreadController(QObject):
         self.worker_thread = QThread()
         self._setup_thread()
 
-    def _setup_thread(self):
+    def _setup_thread(self) -> None:
         """Setup thread and worker."""
         # Worker
         self.worker.moveToThread(self.worker_thread)
-        # Quit thread when worker finish job
+        # Quit thread when worker finish job to
+        # ensure the thread emits finished so cleanup func runs
         self.worker.finished.connect(self.worker_thread.quit)
         # Thread
         self.worker_thread.started.connect(self.worker.run)

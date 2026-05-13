@@ -3,6 +3,8 @@ from PySide6.QtCore import Qt
 
 
 class AppNameWidget(QWidget):
+    """Widget that displays the application name."""
+
     def __init__(self) -> None:
         super().__init__()
         self._setup_layout()

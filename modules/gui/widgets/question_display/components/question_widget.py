@@ -54,7 +54,7 @@ class QuestionWidget(QFrame):
         self.main_layout.addWidget(infoLabel)
 
     def _on_answer_button_clicked(self, button: QRadioButton) -> None:
-        self.user_answer = button.property("user_answer")
+        self.user_answer = str(button.property("user_answer"))
         if self.question.correct_answer == self.user_answer:
             self.correct_answer = True
         else:

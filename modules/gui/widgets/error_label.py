@@ -1,14 +1,14 @@
-from PySide6.QtWidgets import QLabel
-from PySide6.QtCore import Qt, QTimer, QThread
+from PySide6.QtWidgets import QLabel, QWidget
+from PySide6.QtCore import Qt, QTimer
 
 from ...questions import OpenTriviaClientError
-from ..workers import QuestionLoader, WorkerThreadControllerError
+from ..workers import WorkerThreadControllerError
 
 
 class ErrorLabel(QLabel):
-    """Error label."""
+    """Temporary overlay label for API and worker errors."""
     
-    def __init__(self, parent, error: OpenTriviaClientError | WorkerThreadControllerError) -> None:
+    def __init__(self, parent: QWidget | None, error: OpenTriviaClientError | WorkerThreadControllerError) -> None:
         super().__init__(parent)
         self.error = error
         self._setup_label()

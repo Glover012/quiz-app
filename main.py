@@ -10,6 +10,9 @@ from modules import MainWindow
 logger = logging.getLogger(__name__)
 
 def configure_logging() -> None:
+    """
+    Configure application logging from QUIZ_APP_LOG_LEVEL environment variable.
+    """
     log_level = os.getenv("QUIZ_APP_LOG_LEVEL", "INFO").upper()
 
     logging.basicConfig(
@@ -20,15 +23,14 @@ def configure_logging() -> None:
 
 def main() -> None:
     """Start Qt based application."""
-    # Set up logging
     configure_logging()
     logger.info("Starting Quiz-App")
-    
+
     app = QApplication(sys.argv)
     # Set global font
     font = QFont("Inter", 12)
     app.setFont(font)
-    # Set CWD, so that relative paths work correctly
+    # Set CWD to project root, so that relative paths work correctly
     os.chdir(os.path.dirname(__file__))
     logger.debug("Set CWD to %s", os.getcwd())
 

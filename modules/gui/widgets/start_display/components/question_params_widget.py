@@ -1,11 +1,19 @@
+from typing import TypedDict
+
 from PySide6.QtWidgets import QGridLayout, QWidget, QLabel, QComboBox
 from PySide6.QtCore import Qt
 
 from .....questions import CATEGORIES, DIFFICULTIES, QUESTION_TYPES
 
+class QuestionParams(TypedDict):
+    amount: str
+    difficulty: str
+    category: str
+    question_type: str
+
 
 class QuestionParamsWidget(QWidget):
-    """Widget for selecting quiz parameters and starting a new quiz."""
+    """Widget for selecting OpenTDB quiz parameters."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -60,15 +68,15 @@ class QuestionParamsWidget(QWidget):
         self.main_layout.addWidget(self.question_category_cb, 1, 2)
         self.main_layout.addWidget(self.question_type_cb, 1, 3)
 
-    def get_params(self) -> dict[str, str]:
-        params = {
-            "amount" : self.question_amount_cb.currentText(),
-            "difficulty" : self.question_difficulty_cb.currentData(),
-            "category" : self.question_category_cb.currentData(),
-            "question_type" : self.question_type_cb.currentData(),
+    def get_params(self) -> QuestionParams:
+        params: QuestionParams = {
+            "amount": str(self.question_amount_cb.currentText()),
+            "difficulty": str(self.question_difficulty_cb.currentData()),
+            "category": str(self.question_category_cb.currentData()),
+            "question_type": str(self.question_type_cb.currentData()),
         }
         return params
 
     def _reset_comboboxes_to_default_values(self) -> None:
-        """Rest values on recieved error."""
+        """Reset combo boxes to default values after a failed load."""
         

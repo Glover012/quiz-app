@@ -1,10 +1,10 @@
-from copyreg import dispatch_table
-
 from PySide6.QtWidgets import QVBoxLayout, QWidget, QPushButton
 from PySide6.QtCore import Qt, Signal, Slot
 
 
 class StartButtonWidget(QWidget):
+    """Start button widget that disables itself while questions load."""
+
     start_button_pressed = Signal()
     start_error_returned = Signal()
 
@@ -22,16 +22,16 @@ class StartButtonWidget(QWidget):
         self.start_button = QPushButton('Start')
         self.main_layout.addWidget(self.start_button, alignment=Qt.AlignmentFlag.AlignCenter)
     
-    def _setup_button(self):
+    def _setup_button(self) -> None:
         self.start_button.setObjectName('startButton')
         self.start_button.clicked.connect(self._on_start_button_clicked)
         self.start_error_returned.connect(self.on_error_returned)
 
     @Slot()
-    def _on_start_button_clicked(self):
+    def _on_start_button_clicked(self) -> None:
         self.start_button.setEnabled(False)
         self.start_button_pressed.emit()
 
     @Slot()
-    def on_error_returned(self):
+    def on_error_returned(self) -> None:
         self.start_button.setEnabled(True)

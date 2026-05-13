@@ -1,4 +1,4 @@
-from typing import Any, ClassVar
+from typing import ClassVar, TypedDict
 
 import logging
 import requests
@@ -8,6 +8,20 @@ logger = logging.getLogger(__name__)
 
 class OpenTriviaClientError(Exception):
     """Raised when fetching questions from OpenTDB fails."""
+
+
+class OpenTriviaAPIQuestionFormat(TypedDict):
+    type: str
+    difficulty: str
+    category: str
+    question: str
+    correct_answer: str
+    incorrect_answers: list[str]
+
+
+class OpenTriviaAPIResponseFormat(TypedDict):
+    response_code: int
+    results: list[OpenTriviaAPIQuestionFormat]
 
 
 class OpenTriviaClient:
@@ -21,7 +35,7 @@ class OpenTriviaClient:
             category: str = '',
             difficulty: str = '',
             question_type: str = '',
-            ) -> dict[str, Any]:
+            ) -> OpenTriviaAPIResponseFormat:
         """Load quiz questions data from OpenTDB API based on given parameters."""
 
         params = {

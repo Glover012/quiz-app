@@ -1,10 +1,10 @@
 import logging
 
 from PySide6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QFrame, QMessageBox
-from PySide6.QtCore import Slot, Signal
+from PySide6.QtCore import Slot
 
-from .widgets import WelcomeLabel, ErrorLabel, StartDisplay, QuestionDisplay
-from .menu_bar import MenuBar, MenuActionsSignals
+from .widgets import WelcomeLabel, ErrorLabel, StartDisplay, QuestionDisplay, QuestionParams
+from .menu_bar import MenuBar, MenuActions
 from .workers import QuestionLoader, WorkerThreadController, WorkerThreadControllerError
 from ..questions import OpenTriviaClientError, Questions
 
@@ -13,8 +13,8 @@ logger = logging.getLogger(__name__)
 
 class MainWindow(QMainWindow):
     """
-    Main application window. Central application points.
-    MainWindow is responsible for full application control.
+    MainWindow is a central application point. Responsible for application 
+    control, navigation, question loading, and quiz display.
     """
 
     def __init__(self) -> None:
@@ -36,22 +36,22 @@ class MainWindow(QMainWindow):
 
     def _set_menu_bar(self) -> None:
         self.menu_bar = MenuBar()
-        # Connects Signal from MenuBar
+        # Connects Signals from MenuBar
         self.menu_bar.action_requested.connect(self._handle_menu_actions) 
         self.setMenuBar(self.menu_bar)
 
     @Slot(object)
-    def _handle_menu_actions(self, action: MenuActionsSignals):
+    def _handle_menu_actions(self, action: MenuActions) -> None:
         match action:
-            case MenuActionsSignals.SHOW_START_DISPLAY:
+            case MenuActions.SHOW_START_DISPLAY:
                 self._start_display_requested()
-            case MenuActionsSignals.EXIT_APP:
+            case MenuActions.EXIT_APP:
                 self.close()
-            case MenuActionsSignals.ABOUT_APP:
+            case MenuActions.ABOUT_APP:
                 QMessageBox.about(self, 'About app', '''Simple Quiz App that utilise PySide6 GUI.''')
 
     @Slot()
-    def _start_display_requested(self):
+    def _start_display_requested(self) -> None:
         self.start_display = StartDisplay()
         # Connect start_quiz_requested signal from start_display
         self.start_display.start_quiz_requested.connect(self._load_questions)
@@ -63,25 +63,24 @@ class MainWindow(QMainWindow):
         self._display_error(error)
 
     def _display_error(self, error: OpenTriviaClientError | WorkerThreadControllerError) -> None:
-        """Display overlay label with error."""
+        """Show a temporary floating error message over the main window."""
         self.error_label = ErrorLabel(self.central_widget, error)
         self.error_label.setGeometry(20, 20, self.central_widget.width() - 40, 50)
         self.error_label.show_error()
         self.error_label.raise_()
 
     @Slot()
-    def _display_loading_screen(self):
+    def _display_loading_screen(self) -> None:
         pass
 
     @Slot()
-    def _hide_loading_screen(self):
+    def _hide_loading_screen(self) -> None:
         pass
 
     @Slot(dict)
-    def _load_questions(self, question_params) -> None:
-        """Start QuestionLoader worker."""
-        # Connect signals before init thread_controller,
-        # due to constructur strucutre
+    def _load_questions(self, question_params: QuestionParams) -> None:
+        """Start a background worker that loads quiz questions. Use WorkerThreadController."""
+        # Connect worker signals before starting the thread
         try:
             # Connect worker error signal
             self.question_loader = QuestionLoader(question_params)
@@ -99,7 +98,7 @@ class MainWindow(QMainWindow):
             self._on_error(error)
 
     @Slot(Questions)
-    def _on_questions_loaded(self, questions: Questions):
+    def _on_questions_loaded(self, questions: Questions) -> None:
         """Display questions in QuestionDisplay."""
         self.question_display = QuestionDisplay(questions.questions_list)
         self.question_display.repeat_button_clicked.connect(self._start_display_requested)
