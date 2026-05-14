@@ -10,6 +10,14 @@ class OpenTriviaClientError(Exception):
     """Raised when fetching questions from OpenTDB fails."""
 
 
+class NoQuestionsFoundError(OpenTriviaClientError):
+    """Raised when OpenTDB returns no questions for the selected parameters."""
+
+
+class NotEnoughQuestionsError(OpenTriviaClientError):
+    """Raised when OpenTDB returns fewer questions than requested."""
+
+
 class OpenTriviaAPIQuestionFormat(TypedDict):
     type: str
     difficulty: str
@@ -56,9 +64,9 @@ class OpenTriviaClient:
             response.raise_for_status()
             data = response.json()
             if not data['results']:
-                raise OpenTriviaClientError('No questions found for selected parameters. Try different category, difficulty or type.')
+                raise NoQuestionsFoundError('No questions found for selected parameters. Try different category, difficulty or type.')
             elif int(amount) > len(data['results']):
-                raise OpenTriviaClientError('Not enough questions found for the selected parameters. Try lower number.')
+                raise NotEnoughQuestionsError('Not enough questions found for the selected parameters. Try lower number.')
             return data
    
         except requests.exceptions.Timeout as error:

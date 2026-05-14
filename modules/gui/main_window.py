@@ -1,7 +1,7 @@
 import logging
 
 from PySide6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QFrame, QMessageBox
-from PySide6.QtCore import Slot
+from PySide6.QtCore import Slot, QTimer
 
 from .widgets import WelcomeLabel, ErrorLabel, StartDisplay, QuestionDisplay, QuestionParams
 from .menu_bar import MenuBar, MenuActions
@@ -12,15 +12,13 @@ logger = logging.getLogger(__name__)
 
 
 class MainWindow(QMainWindow):
-    """
-    MainWindow is a central application point. Responsible for application 
-    control, navigation, question loading, and quiz display.
-    """
+    """Main window that coordinates navigation, question loading, and quiz display."""
 
     def __init__(self) -> None:
         super().__init__()
         self._setup_window()
         self._setup_layout()
+        self._init_default_variables()
         self._set_menu_bar()
         self._display_widget(WelcomeLabel())
 
@@ -33,6 +31,9 @@ class MainWindow(QMainWindow):
         self.central_widget = QWidget()
         self.central_widget.setLayout(self.main_layout)
         self.setCentralWidget(self.central_widget)
+
+    def _init_default_variables(self) -> None:
+        self.error_label: ErrorLabel | None = None
 
     def _set_menu_bar(self) -> None:
         self.menu_bar = MenuBar()
@@ -48,7 +49,7 @@ class MainWindow(QMainWindow):
             case MenuActions.EXIT_APP:
                 self.close()
             case MenuActions.ABOUT_APP:
-                QMessageBox.about(self, 'About app', '''Simple Quiz App that utilise PySide6 GUI.''')
+                QMessageBox.about(self, 'About app', '''Simple quiz app built with PySide6.''')
 
     @Slot()
     def _start_display_requested(self) -> None:
@@ -59,15 +60,28 @@ class MainWindow(QMainWindow):
 
     @Slot(object)
     def _on_error(self, error: OpenTriviaClientError | WorkerThreadControllerError) -> None:
-        self.start_display.start_error_returned.emit()
+        self.start_display.start_error_returned.emit(error)
         self._display_error(error)
+
+    def _clear_current_error_label(self) -> None:
+        if self.error_label is not None:
+            self.error_label.hide()
+            self.error_label.deleteLater()
+            self.error_label = None
+
+    def _clear_error_label_if_current(self, error_label: ErrorLabel) -> None:
+        if self.error_label is error_label:
+            self._clear_current_error_label()
 
     def _display_error(self, error: OpenTriviaClientError | WorkerThreadControllerError) -> None:
         """Show a temporary floating error message over the main window."""
-        self.error_label = ErrorLabel(self.central_widget, error)
-        self.error_label.setGeometry(20, 20, self.central_widget.width() - 40, 50)
-        self.error_label.show_error()
-        self.error_label.raise_()
+        self._clear_current_error_label()
+        error_label = ErrorLabel(self.central_widget, error)
+        self.error_label = error_label
+        error_label.setGeometry(20, 20, self.central_widget.width() - 40, 50)
+        error_label.show_error()
+        error_label.raise_()
+        QTimer.singleShot(5000, lambda: self._clear_error_label_if_current(error_label))
 
     @Slot()
     def _display_loading_screen(self) -> None:

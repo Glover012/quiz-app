@@ -1,7 +1,10 @@
 from typing import TypedDict
 
-from PySide6.QtWidgets import QGridLayout, QWidget, QLabel, QComboBox
-from PySide6.QtCore import Qt
+from enum import StrEnum
+
+from PySide6.QtWidgets import QWidget, QLabel, QComboBox, QHBoxLayout, QVBoxLayout, QFrame
+from PySide6.QtCore import Qt, Slot
+
 
 from .....questions import CATEGORIES, DIFFICULTIES, QUESTION_TYPES
 
@@ -12,71 +15,138 @@ class QuestionParams(TypedDict):
     question_type: str
 
 
+class QuestionParamsField(StrEnum):
+    """Quiz parameter fields that can be reset and marked as invalid."""
+    AMOUNT = "amount"
+    DIFFICULTY = "difficulty"
+    CATEGORY = "category"
+    QUESTION_TYPE = "question_type"
+
+
+class ParamFrame(QFrame):
+    """Frame that groups a parameter label with its combo box."""
+    def __init__(self, label_text: str) -> None:
+        super().__init__()
+        self.label_text = label_text
+        self.setObjectName("paramFrame")
+        self.setProperty("paramState", None)
+        self._setup_layout()
+        self._add_label()
+
+    def _setup_layout(self) -> None:
+        self.main_layout = QVBoxLayout()
+        self.setLayout(self.main_layout)
+
+    def _add_label(self) -> None:
+        param_label = QLabel(self.label_text)
+        self.main_layout.addWidget(param_label)
+
+    def add_combobox(self, combobox: QComboBox) -> None:
+        self.main_layout.addWidget(combobox, alignment=Qt.AlignmentFlag.AlignCenter)
+
+
 class QuestionParamsWidget(QWidget):
     """Widget for selecting OpenTDB quiz parameters."""
 
     def __init__(self) -> None:
         super().__init__()
+        self.frame_list: list[ParamFrame] = []
         self._setup_layout()
-        self._add_question_params_labels()
-        self._add_question_params_comboboxes()
+        self._setup_question_params_comboboxes()
+        self._add_question_param_frames()
 
     def _setup_layout(self) -> None:
-        self.main_layout = QGridLayout()
+        self.main_layout = QHBoxLayout()
         self.setLayout(self.main_layout)
 
-    def _add_question_params_labels(self) -> None:
-        self.main_layout.addWidget(
-            QLabel('Amount')
-            , 0, 0, alignment=Qt.AlignmentFlag.AlignCenter
-            )
-        self.main_layout.addWidget(
-            QLabel('Difficulty')
-            , 0, 1, alignment=Qt.AlignmentFlag.AlignCenter
-            )
-        self.main_layout.addWidget(
-            QLabel('Category')
-            , 0, 2, alignment=Qt.AlignmentFlag.AlignCenter
-            )
-        self.main_layout.addWidget(
-            QLabel('Type')
-            , 0, 3, alignment=Qt.AlignmentFlag.AlignCenter
-            )
-
-    def _add_question_params_comboboxes(self) -> None:
+    def _setup_question_params_comboboxes(self) -> None:
         min_question_amount = 2
-        max_question_amount = 30
+        max_question_amount = 100
         question_amount_list = [str(i) for i in range(min_question_amount, max_question_amount + 1)]
-        self.question_amount_cb = QComboBox()
-        self.question_amount_cb.addItems(question_amount_list)
+        self.amount_cb = QComboBox()
+        self.amount_cb.addItems(question_amount_list)
 
         # Add values to comboboxes from static variables in API params
-        self.question_category_cb = QComboBox()
+        self.category_cb = QComboBox()
         for category, category_id in CATEGORIES.items():
-            self.question_category_cb.addItem(category, category_id)
+            self.category_cb.addItem(category, category_id)
 
-        self.question_difficulty_cb = QComboBox()
+        self.difficulty_cb = QComboBox()
         for difficulty, difficulty_id in DIFFICULTIES.items():
-            self.question_difficulty_cb.addItem(difficulty, difficulty_id)
+            self.difficulty_cb.addItem(difficulty, difficulty_id)
 
-        self.question_type_cb = QComboBox()
+        self.type_cb = QComboBox()
         for question_type, question_type_id in QUESTION_TYPES.items():
-            self.question_type_cb.addItem(question_type, question_type_id)
+            self.type_cb.addItem(question_type, question_type_id)
 
-        self.main_layout.addWidget(self.question_amount_cb, 1, 0)
-        self.main_layout.addWidget(self.question_difficulty_cb, 1, 1)
-        self.main_layout.addWidget(self.question_category_cb, 1, 2)
-        self.main_layout.addWidget(self.question_type_cb, 1, 3)
+    def _add_question_param_frames(self) -> None:
+        self.amount_frame = ParamFrame("Amount")
+        self.frame_list.append(self.amount_frame)
+        self.amount_frame.add_combobox(self.amount_cb)
+        self.main_layout.addWidget(self.amount_frame)
+
+        self.difficulty_frame = ParamFrame("Difficulty")
+        self.frame_list.append(self.difficulty_frame)
+        self.difficulty_frame.add_combobox(self.difficulty_cb)
+        self.main_layout.addWidget(self.difficulty_frame)
+
+        self.category_frame = ParamFrame("Category")
+        self.frame_list.append(self.category_frame)
+        self.category_frame.add_combobox(self.category_cb)
+        self.main_layout.addWidget(self.category_frame)
+
+        self.type_frame = ParamFrame("Type")
+        self.frame_list.append(self.type_frame)
+        self.type_frame.add_combobox(self.type_cb)
+        self.main_layout.addWidget(self.type_frame)
 
     def get_params(self) -> QuestionParams:
+        self._reset_error_frames() # Reset frame colors before another load attempt.
         params: QuestionParams = {
-            "amount": str(self.question_amount_cb.currentText()),
-            "difficulty": str(self.question_difficulty_cb.currentData()),
-            "category": str(self.question_category_cb.currentData()),
-            "question_type": str(self.question_type_cb.currentData()),
+            "amount": str(self.amount_cb.currentText()),
+            "difficulty": str(self.difficulty_cb.currentData()),
+            "category": str(self.category_cb.currentData()),
+            "question_type": str(self.type_cb.currentData()),
         }
         return params
 
-    def _reset_comboboxes_to_default_values(self) -> None:
-        """Reset combo boxes to default values after a failed load."""
-        
+    @Slot()
+    def on_error_reset_combobox_to_default_values(
+        self, *fields: QuestionParamsField
+        ) -> None:
+        """
+        Reset selected combo boxes to default values.
+
+        If no fields are provided, reset all fields. Mark reset fields as invalid
+        to show which parameters caused the loading error.
+        """
+        fields_to_reset = list(fields) if fields else list(QuestionParamsField)
+
+        for field in fields_to_reset:
+            match field:
+                case QuestionParamsField.AMOUNT:
+                    self.amount_cb.setCurrentIndex(0)
+                    self._color_error_param_frame(self.amount_frame)
+                case QuestionParamsField.DIFFICULTY:
+                    self.difficulty_cb.setCurrentIndex(0)
+                    self._color_error_param_frame(self.difficulty_frame)
+                case QuestionParamsField.CATEGORY:
+                    self.category_cb.setCurrentIndex(0)
+                    self._color_error_param_frame(self.category_frame)
+                case QuestionParamsField.QUESTION_TYPE:
+                    self.type_cb.setCurrentIndex(0)
+                    self._color_error_param_frame(self.type_frame)
+
+    def _color_error_param_frame(self, frame: QFrame) -> None:
+        """Mark a parameter frame as invalid."""
+        frame.setProperty("paramState", "error")
+        frame.style().unpolish(frame)
+        frame.style().polish(frame)
+        frame.update()
+
+    def _reset_error_frames(self) -> None:
+        for frame in self.frame_list:
+            frame.setProperty("paramState", None)
+            frame.style().unpolish(frame)
+            frame.style().polish(frame)
+            frame.update()

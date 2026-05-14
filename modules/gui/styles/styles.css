@@ -118,6 +118,11 @@ QFrame#questionWidgetFrame[answerState='incorrect'] {
     border: 2px solid #e74c3c;
 }
 
+QFrame#paramFrame[paramState="error"] {
+    border: 2px solid #bc3535;
+    border-radius: 10px;
+}
+
 QFrame#resultWidgetFrame {
     border: 2px solid #666666;
     border-radius: 10px;

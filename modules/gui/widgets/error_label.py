@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QLabel, QWidget
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt
 
 from ...questions import OpenTriviaClientError
 from ..workers import WorkerThreadControllerError
@@ -24,4 +24,3 @@ class ErrorLabel(QLabel):
         elif isinstance(self.error, WorkerThreadControllerError):
             self.setText(f'Thread Error - {self.error}')
         self.show()
-        timer = QTimer.singleShot(5000, self.deleteLater)

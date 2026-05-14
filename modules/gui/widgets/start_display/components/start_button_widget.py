@@ -6,7 +6,6 @@ class StartButtonWidget(QWidget):
     """Start button widget that disables itself while questions load."""
 
     start_button_pressed = Signal()
-    start_error_returned = Signal()
 
     def __init__(self) -> None:
         super().__init__()
@@ -25,7 +24,6 @@ class StartButtonWidget(QWidget):
     def _setup_button(self) -> None:
         self.start_button.setObjectName('startButton')
         self.start_button.clicked.connect(self._on_start_button_clicked)
-        self.start_error_returned.connect(self.on_error_returned)
 
     @Slot()
     def _on_start_button_clicked(self) -> None:
