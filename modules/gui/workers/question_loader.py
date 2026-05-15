@@ -1,15 +1,18 @@
+import logging
+
 from PySide6.QtCore import QObject, Signal, Slot
 
 from ..widgets import QuestionParams
 from ...questions.models import Questions
-from ...questions.opentdb_client import OpenTriviaClientError
+
+logger = logging.getLogger(__name__)
 
 
 class QuestionLoader(QObject):
     """Worker object that loads questions and emits success or error signals."""
 
     loaded = Signal(Questions)
-    error = Signal(OpenTriviaClientError)
+    error = Signal(Exception)
     finished = Signal()
 
     def __init__(self, params: QuestionParams) -> None:
@@ -24,8 +27,9 @@ class QuestionLoader(QObject):
         try:
             questions = self._load_questions()
             self.loaded.emit(questions)
-        except OpenTriviaClientError as api_error:
-            self.error.emit(api_error)
+        except Exception as error:
+            logger.exception("Question loading failed.")
+            self.error.emit(error)
         finally:
             self.finished.emit()
 

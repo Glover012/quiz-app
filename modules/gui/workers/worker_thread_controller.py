@@ -26,20 +26,24 @@ class WorkerThreadController(QObject):
         super().__init__()
         self.worker = worker
         self.worker_thread = QThread()
-        self._setup_thread()
+        self._setup_worker_thread()
+        self._connect_external_signals()
+        self._connect_internal_signals()
 
-    def _setup_thread(self) -> None:
+    def _setup_worker_thread(self) -> None:
         """Setup thread and worker."""
-        # Worker
         self.worker.moveToThread(self.worker_thread)
+
+    def _connect_external_signals(self):
+        self.worker_thread.started.connect(self.thread_started.emit)
+        self.worker_thread.finished.connect(self.thread_finished.emit)
+
+    def _connect_internal_signals(self):
         # Quit thread when worker finish job to
         # ensure the thread emits finished so cleanup func runs
         self.worker.finished.connect(self.worker_thread.quit)
-        # Thread
         self.worker_thread.started.connect(self.worker.run)
-        self.worker_thread.started.connect(self.thread_started.emit)
         self.worker_thread.finished.connect(self._clean)
-        self.worker_thread.finished.connect(self.thread_finished.emit)
 
     def run_thread(self) -> None:
         """

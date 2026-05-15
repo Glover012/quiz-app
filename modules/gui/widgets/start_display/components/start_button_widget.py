@@ -15,11 +15,12 @@ class StartButtonWidget(QWidget):
 
     def _setup_layout(self) -> None:
         self.main_layout = QVBoxLayout()
+        self.main_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.setLayout(self.main_layout)
 
     def _add_start_button(self) -> None:
         self.start_button = QPushButton('Start')
-        self.main_layout.addWidget(self.start_button, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.main_layout.addWidget(self.start_button)
     
     def _setup_button(self) -> None:
         self.start_button.setObjectName('startButton')

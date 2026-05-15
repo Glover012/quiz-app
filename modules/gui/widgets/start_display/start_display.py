@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QVBoxLayout, QWidget
-from PySide6.QtCore import Signal, Slot
+from PySide6.QtCore import Qt, Signal, Slot
 
 from .components import AppNameWidget, StartButtonWidget, QuestionParamsWidget, QuestionParamsField
 from ....questions import NoQuestionsFoundError, NotEnoughQuestionsError
@@ -40,9 +40,9 @@ class StartDisplay(QWidget):
             self.question_params.on_error_reset_combobox_to_default_values(QuestionParamsField.AMOUNT)
 
     def _add_widgets(self) -> None:
-        self.main_layout.addWidget(self.app_name)
-        self.main_layout.addWidget(self.start_button)
-        self.main_layout.addWidget(self.question_params)
+        self.main_layout.addWidget(self.app_name, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.main_layout.addWidget(self.start_button, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.main_layout.addWidget(self.question_params, alignment=Qt.AlignmentFlag.AlignCenter)
 
     @Slot()
     def _start_quiz_requested(self) -> None:

@@ -12,10 +12,11 @@ class AppNameWidget(QWidget):
 
     def _setup_layout(self) -> None:
         self.main_layout = QVBoxLayout()
+        self.main_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.setLayout(self.main_layout)
 
     def _display_app_name(self) -> None:
         app_name = QLabel('Quiz App')
         app_name.setObjectName('appName')
-        self.main_layout.addWidget(app_name, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.main_layout.addWidget(app_name)
         

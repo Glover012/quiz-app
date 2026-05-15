@@ -55,7 +55,8 @@ QLabel#questionInfoLabel {
     color: #646464;
 }
 
-QLabel#errorLabel {
+/* Error overlay */
+QLabel#errorOverlayLabel {
     color: #fca5a5;
     background-color: #3f1d1d;
     border: 1px solid #ef4444;
@@ -93,16 +94,16 @@ QPushButton#finishQuizButton:pressed {
 
 QPushButton#repeatQuizButton {
     font-size: 30px;
-    background-color: #F7C948;
-    color: #3A2A00;
+    background-color: #c69716;
+    color: #2e2c2c;
 }
 
 QPushButton#repeatQuizButton:hover {
-    background-color: #E0A800;
+    background-color: #a17a11;
 }
 
 QPushButton#repeatQuizButton:pressed {
-    background-color: #B88700;
+    background-color: #83640e;
 }
 
 QFrame#questionWidgetFrame {
@@ -135,4 +136,28 @@ QRadioButton#questionAnswerRadioButton[containAnswer='correct'] {
 
 QRadioButton#questionAnswerRadioButton[containAnswer='incorrect'] {
     color: #e74c3c;
+}
+
+/* Loading screen */
+QWidget#loadingOverlay {
+    background-color: rgba(0, 0, 0, 150);
+}
+
+QLabel#loadingOverlayLabel {
+    color: #ffffff;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+QProgressBar#loadingOverlayProgressBar {
+    min-height: 14px;
+    max-height: 14px;
+    border: 1px solid #ffffff;
+    border-radius: 7px;
+    background-color: rgba(255, 255, 255, 60);
+}
+
+QProgressBar#loadingOverlayProgressBar::chunk {
+    border-radius: 7px;
+    background-color: #16a34a;
 }

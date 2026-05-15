@@ -35,14 +35,21 @@ class ParamFrame(QFrame):
 
     def _setup_layout(self) -> None:
         self.main_layout = QVBoxLayout()
+        self.main_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.setLayout(self.main_layout)
 
     def _add_label(self) -> None:
         param_label = QLabel(self.label_text)
-        self.main_layout.addWidget(param_label)
+        self.main_layout.addWidget(
+            param_label,
+            alignment=Qt.AlignmentFlag.AlignBottom,
+            )
 
     def add_combobox(self, combobox: QComboBox) -> None:
-        self.main_layout.addWidget(combobox, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.main_layout.addWidget(
+            combobox,
+            alignment=Qt.AlignmentFlag.AlignTop,
+            )
 
 
 class QuestionParamsWidget(QWidget):
@@ -57,6 +64,7 @@ class QuestionParamsWidget(QWidget):
 
     def _setup_layout(self) -> None:
         self.main_layout = QHBoxLayout()
+        self.main_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.setLayout(self.main_layout)
 
     def _setup_question_params_comboboxes(self) -> None:
