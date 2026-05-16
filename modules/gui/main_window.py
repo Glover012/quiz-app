@@ -12,18 +12,20 @@ logger = logging.getLogger(__name__)
 
 
 class MainWindow(QMainWindow):
-    """Main window that coordinates navigation, question loading, and quiz display."""
+    """
+    Main window that coordinates navigation, question loading, and quiz display.
+    Has own closeEvent. Beaware that timeout of question loading is 3 seconds.
+    """
 
     def __init__(self) -> None:
         super().__init__()
-        # List of ignored widgets, from MainWindow cleanup methods
-        self.ignored = []
         self._setup_window()
         self._setup_layout()
+        self._init_default_variables()
         self._setup_menu_bar()
         self._setup_error_overlay()
         self._setup_loading_overlay()
-        self._display_widget(WelcomeLabel())
+        self._setup_initial_widget()
 
     def _setup_window(self) -> None:
         self.setObjectName("mainWindow")
@@ -36,6 +38,14 @@ class MainWindow(QMainWindow):
         self.central_widget = QWidget()
         self.central_widget.setLayout(self.main_layout)
         self.setCentralWidget(self.central_widget)
+    
+    def _init_default_variables(self):
+        # List of ignored widgets, from MainWindow clean method
+        # Used for overlays
+        self.ignored = []
+        self.question_loader = None
+        self.thread_controller = None
+        self._close_requested = False
 
     def _setup_menu_bar(self) -> None:
         self.menu_bar = MenuBar()
@@ -50,6 +60,9 @@ class MainWindow(QMainWindow):
     def _setup_loading_overlay(self):
         self.loading_overlay = LoadingOverlay()
         self._add_overlay(self.loading_overlay)
+
+    def _setup_initial_widget(self):
+        self._display_widget(WelcomeLabel())
 
     @Slot(object)
     def _handle_menu_actions(self, action: MenuActions) -> None:
@@ -70,6 +83,9 @@ class MainWindow(QMainWindow):
 
     @Slot(object)
     def _on_error(self, error: Exception) -> None:
+        if self._close_requested:
+            return # Do nothing if _close_requested
+
         self.start_display.start_error_returned.emit(error)
         self.error_overlay.show_error(error, for_seconds=5)
 
@@ -88,6 +104,7 @@ class MainWindow(QMainWindow):
             # Connect loading screen signals
             self.thread_controller.thread_started.connect(self._show_loading_screen)
             self.thread_controller.thread_finished.connect(self._hide_loading_screen)
+            self.thread_controller.thread_finished.connect(self._on_thread_finished)
             # Start thread
             self.thread_controller.run_thread()
         except Exception as error:
@@ -103,9 +120,24 @@ class MainWindow(QMainWindow):
         self.menu_bar.setEnabled(True)
         self.loading_overlay.hide_loading()
 
+    @Slot()
+    def _on_thread_finished(self):
+        """
+        Remove reference from thread_controller and question_loader. 
+        Close app if _close_requested.
+        """
+        self.question_loader = None
+        self.thread_controller = None
+
+        if self._close_requested:
+            self.close()
+
     @Slot(Questions)
     def _on_questions_loaded(self, questions: Questions) -> None:
         """Display questions in QuestionDisplay."""
+        if self._close_requested:
+            return # Do nothing if _close_requested
+        
         self.question_display = QuestionDisplay(questions.questions_list)
         self.question_display.repeat_button_clicked.connect(self._start_display_requested)
         self._display_widget(self.question_display)
@@ -146,3 +178,22 @@ class MainWindow(QMainWindow):
                     self.main_layout.removeWidget(widget)
                     widget.deleteLater()
         logger.debug("Deleted widget count: %s", widget_count)
+
+    def closeEvent(self, event):
+        """
+        Replaces MainWindow closeEvent. Function set _close_requested flag True.
+
+        Delay closing while the question loader thread is still running.
+
+        The first close request asks the thread to stop and ignores the event.
+        When the thread emits finished, _on_thread_finished calls close() again.
+        The second close request is accepted because the thread is no longer running.
+        """
+        if self.thread_controller is not None and self.thread_controller.is_running():
+            self._close_requested = True
+            self.thread_controller.stop()
+            # Cancel close event, it is required due to thread cleanup
+            event.ignore() 
+            return
+
+        super().closeEvent(event) # Use closeEvent from QMainWindow to close event=MainWindow

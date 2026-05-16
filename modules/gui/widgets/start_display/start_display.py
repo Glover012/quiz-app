@@ -1,14 +1,14 @@
 from PySide6.QtWidgets import QVBoxLayout, QWidget
 from PySide6.QtCore import Qt, Signal, Slot
 
-from .components import AppNameWidget, StartButtonWidget, QuestionParamsWidget, QuestionParamsField
+from .components import AppNameWidget, StartButtonWidget, QuestionParamsWidget, QuestionParamsField, QuestionParams
 from ....questions import NoQuestionsFoundError, NotEnoughQuestionsError
 
 
 class StartDisplay(QWidget):
     """Start screen containing the app title, start button and quiz parameter controls."""
 
-    start_quiz_requested = Signal(dict)
+    start_quiz_requested = Signal(QuestionParams)
     start_error_returned = Signal(Exception)
 
     def __init__(self) -> None:

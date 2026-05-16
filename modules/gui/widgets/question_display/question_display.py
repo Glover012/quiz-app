@@ -97,6 +97,7 @@ class QuestionDisplay(QWidget):
     def _on_finish_quiz_button_clicked(self) -> None:
         """Handle finish quiz button click, calculate score, format question widgets and display results."""
         logger.debug("Finish quiz button clicked.")
+        self.finish_quiz_button.setEnabled(False)
         self.finish_quiz_button.deleteLater()
         self._calculate_score()
         self._format_question_widget_style_post_finish()

@@ -59,7 +59,7 @@ class OpenTriviaClient:
         logger.debug("Fetching questions from OpenTDB with params: %s", params)
 
         try:
-            response = requests.get(self.BASE_URL, params=params, timeout=10)
+            response = requests.get(self.BASE_URL, params=params, timeout=3)
             logger.debug("OpenTDB response status: %s", response.status_code)
             response.raise_for_status()
             data = response.json()

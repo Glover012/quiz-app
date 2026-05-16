@@ -39,7 +39,7 @@ class TestOpenTriviaClient(unittest.TestCase):
         mock_requests_get.assert_called_once_with(
             OpenTriviaClient.BASE_URL,
             params={"amount": 1},
-            timeout=10,
+            timeout=3,
         )
 
         # Check whether raise_for_status has been called on mocked response
@@ -76,7 +76,7 @@ class TestOpenTriviaClient(unittest.TestCase):
                 "difficulty": "easy",
                 "type": "boolean",
                 },
-            timeout=10,
+            timeout=3,
         )
 
         mock_response.raise_for_status.assert_called_once()
