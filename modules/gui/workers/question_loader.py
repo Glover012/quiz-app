@@ -25,7 +25,15 @@ class QuestionLoader(QObject):
     @Slot()
     def run(self) -> None:
         try:
+            logger.info(
+                "QuestionLoader started: amount=%s, category=%s, difficulty=%s, type=%s",
+                self.amount,
+                self.category or "any",
+                self.difficulty or "any",
+                self.question_type or "any",
+                )
             questions = self._load_questions()
+            logger.info("QuestionLoader loaded %s questions.", len(questions.questions_list))
             self.loaded.emit(questions)
         except Exception as error:
             logger.exception("Question loading failed.")

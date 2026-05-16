@@ -67,6 +67,11 @@ class OpenTriviaClient:
                 raise NoQuestionsFoundError('No questions found for selected parameters. Try different category, difficulty or type.')
             elif int(amount) > len(data['results']):
                 raise NotEnoughQuestionsError('Not enough questions found for the selected parameters. Try lower number.')
+            logger.debug(
+                "OpenTDB response parsed: response_code=%s, results=%s",
+                data.get("response_code"),
+                len(data.get("results", [])),
+                )
             return data
    
         except requests.exceptions.Timeout as error:

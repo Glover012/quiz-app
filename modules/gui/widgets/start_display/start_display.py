@@ -1,8 +1,12 @@
+import logging
+
 from PySide6.QtWidgets import QVBoxLayout, QWidget
 from PySide6.QtCore import Qt, Signal, Slot
 
 from .components import AppNameWidget, StartButtonWidget, QuestionParamsWidget, QuestionParamsField, QuestionParams
 from ....questions import NoQuestionsFoundError, NotEnoughQuestionsError
+
+logger = logging.getLogger(__name__)
 
 
 class StartDisplay(QWidget):
@@ -32,6 +36,7 @@ class StartDisplay(QWidget):
 
     def _on_start_error_returned(self, error: Exception) -> None:
         """Re-enable the start button and mark invalid quiz parameters."""
+        logger.debug("Start display handling error: %s", type(error).__name__)
         self.start_button.on_error_returned()
         # Color error params for particular error types
         if isinstance(error, NoQuestionsFoundError):

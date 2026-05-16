@@ -84,14 +84,17 @@ class MainWindow(QMainWindow):
     @Slot(object)
     def _on_error(self, error: Exception) -> None:
         if self._close_requested:
+            logger.debug("Ignoring error callback because close was requested.")
             return # Do nothing if _close_requested
 
+        logger.warning("Displaying loading error: %s: %s", type(error).__name__, error)
         self.start_display.start_error_returned.emit(error)
         self.error_overlay.show_error(error, for_seconds=5)
 
     @Slot(dict)
     def _load_questions(self, question_params: QuestionParams) -> None:
         """Start a background worker that loads quiz questions. Use WorkerThreadController."""
+        logger.info("Question loading requested with params: %s", question_params)
         # Connect worker signals before starting the thread
         try:
             # Connect worker error signal
@@ -126,6 +129,7 @@ class MainWindow(QMainWindow):
         Remove reference from thread_controller and question_loader. 
         Close app if _close_requested.
         """
+        logger.debug("Question loading thread finished. close_requested=%s", self._close_requested)
         self.question_loader = None
         self.thread_controller = None
 
@@ -136,6 +140,7 @@ class MainWindow(QMainWindow):
     def _on_questions_loaded(self, questions: Questions) -> None:
         """Display questions in QuestionDisplay."""
         if self._close_requested:
+            logger.debug("Ignoring loaded questions callback because close was requested.")
             return # Do nothing if _close_requested
         
         self.question_display = QuestionDisplay(questions.questions_list)
@@ -190,10 +195,11 @@ class MainWindow(QMainWindow):
         The second close request is accepted because the thread is no longer running.
         """
         if self.thread_controller is not None and self.thread_controller.is_running():
+            logger.info("Close requested while question loader is running. Waiting for thread cleanup.")
             self._close_requested = True
             self.thread_controller.stop()
             # Cancel close event, it is required due to thread cleanup
             event.ignore() 
             return
-
+        logger.debug("Close accepted. No running question loader thread.")
         super().closeEvent(event) # Use closeEvent from QMainWindow to close event=MainWindow

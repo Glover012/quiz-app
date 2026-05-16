@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+import logging
+
 from typing import TYPE_CHECKING
 
 from PySide6.QtCore import QObject, Signal, QThread
 
 if TYPE_CHECKING:
     from .question_loader import QuestionLoader
+
+logger = logging.getLogger(__name__)
 
 
 class WorkerThreadControllerError(Exception):
@@ -47,9 +51,11 @@ class WorkerThreadController(QObject):
         self.worker_thread.finished.connect(self.worker_thread.deleteLater)
 
     def _on_thread_started(self) -> None:
+        logger.debug("Worker thread started for %s.", type(self.worker).__name__)
         self.running = True
 
     def _on_thread_finished(self) -> None:
+        logger.debug("Worker thread finished for %s.", type(self.worker).__name__)
         self.running = False
 
     def run_thread(self) -> None:
@@ -63,6 +69,7 @@ class WorkerThreadController(QObject):
     
     def stop(self) -> None:
         """Interrupt and quit thread."""
+        logger.info("Worker thread stop requested.")
         if self.worker_thread.isRunning():
             # requests interruption flag, so worker can react when it regains control
             self.worker_thread.requestInterruption()
