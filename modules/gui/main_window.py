@@ -43,9 +43,9 @@ class MainWindow(QMainWindow):
         # List of ignored widgets, from MainWindow clean method
         # Used for overlays
         self.ignored = []
-        self.question_loader = None
-        self.thread_controller = None
         self._close_requested = False
+        self.thread_controller = None
+        self.question_loader = None
 
     def _setup_menu_bar(self) -> None:
         self.menu_bar = MenuBar()
@@ -76,6 +76,7 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def _start_display_requested(self) -> None:
+        logger.debug("Displaying start display.")
         self.start_display = StartDisplay()
         # Connect start_quiz_requested signal to _load_questions method
         self.start_display.start_quiz_requested.connect(self._load_questions)
@@ -174,6 +175,7 @@ class MainWindow(QMainWindow):
 
     def _clear_window(self) -> None:
         """Delete all widgets from MainWindow."""
+        deleted_widgets = 0
         widget_count = self.main_layout.count()
         if widget_count:
             for i in reversed(range(widget_count)):
@@ -182,7 +184,8 @@ class MainWindow(QMainWindow):
                 if widget is not None and widget not in self.ignored:
                     self.main_layout.removeWidget(widget)
                     widget.deleteLater()
-        logger.debug("Deleted widget count: %s", widget_count)
+                    deleted_widgets +=1
+        logger.debug("Deleted widget count: %s", deleted_widgets)
 
     def closeEvent(self, event):
         """

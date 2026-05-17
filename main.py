@@ -27,11 +27,13 @@ def cleanup_old_log_files(log_dir: str, keep: int = 3) -> None:
         ):
             log_files.append(file_path)
 
+    # Sort files in log_files by modification time
     log_files.sort(key=os.path.getmtime, reverse=True)
 
     for old_log_file in log_files[keep:]:
         try:
             os.remove(old_log_file)
+            logger.info("Removed old log file: %s.", old_log_file)
         except OSError as error:
             logger.warning("Could not remove old log file %s. Error: %s", old_log_file, error)
 
@@ -44,7 +46,7 @@ def configure_logging() -> None:
     # Load env var QUIZ_APP_LOG_LEVEL if exists, if not use INFO
     console_log_level = os.getenv("QUIZ_APP_LOG_LEVEL", "INFO").upper()
     # Checks if set attribute in console_log_level is present in logging module
-    # If it is assign it to console level, if it's not return logging.INFO
+    # If it is, assign it to console_level, if it's not return logging.INFO attribute
     console_level = getattr(logging, console_log_level, logging.INFO)
     
     log_dir = "logs"
@@ -85,10 +87,12 @@ def configure_logging() -> None:
 def main() -> None:
     """Start Qt based application."""
     set_current_working_directory()
-    logger.debug("Set CWD to %s", os.getcwd())
     configure_logging()
+    logger.debug("Set CWD to %s", os.getcwd())
+    
     logger.info("Starting Quiz-App")
     app = QApplication(sys.argv)
+
     # Set global font
     font = QFont("Inter", 12)
     app.setFont(font)
@@ -102,7 +106,9 @@ def main() -> None:
     # Create and show main window
     window = MainWindow()
     window.show()
-    sys.exit(app.exec())
+    exit_code = app.exec()
+    logger.info("Quiz-App exited with code %s.", exit_code)
+    sys.exit(exit_code)
 
 if __name__ == "__main__":
     main()

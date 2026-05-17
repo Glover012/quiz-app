@@ -62,6 +62,7 @@ class WorkerThreadController(QObject):
         try:
             self.worker_thread.start()
         except Exception as error:
+            logger.exception("Failed to start worker thread.")
             self.thread_error.emit(WorkerThreadControllerError(str(error)))
 
     def is_running(self) -> bool:
@@ -69,9 +70,11 @@ class WorkerThreadController(QObject):
     
     def stop(self) -> None:
         """Interrupt and quit thread."""
-        logger.info("Worker thread stop requested.")
         if self.worker_thread.isRunning():
+            logger.info("Worker thread stop requested.")
             # requests interruption flag, so worker can react when it regains control
             self.worker_thread.requestInterruption()
             # Quit thread event loop
             self.worker_thread.quit()
+        else:
+            logger.debug("Worker thread stop ignored because thread is not running.")
