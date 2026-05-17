@@ -17,6 +17,7 @@ class QuestionParams(TypedDict):
 
 class QuestionParamsField(StrEnum):
     """Quiz parameter fields that can be reset and marked as invalid."""
+
     AMOUNT = "amount"
     DIFFICULTY = "difficulty"
     CATEGORY = "category"
@@ -109,6 +110,7 @@ class QuestionParamsWidget(QWidget):
         self.main_layout.addWidget(self.type_frame)
 
     def get_params(self) -> QuestionParams:
+        """Return selected question params in comboboxes."""
         self._reset_error_frames() # Reset frame colors before another load attempt.
         params: QuestionParams = {
             "amount": str(self.amount_cb.currentText()),

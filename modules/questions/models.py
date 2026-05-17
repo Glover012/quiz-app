@@ -31,7 +31,16 @@ class Question:
 
 
 class Questions:
-    """Fetch and build Question objects from OpenTDB data."""
+    """
+    Fetch quiz questions from OpenTDB and convert them into Question objects.
+
+    Creating an instance performs an HTTP request through OpenTriviaClient.
+    The loaded questions are stored in questions_list.
+
+    Raises:
+        OpenTriviaClientError: If the API request fails or the response cannot
+            be converted into valid quiz questions.
+    """
 
     def __init__(
             self,
@@ -40,6 +49,15 @@ class Questions:
             difficulty: str = '',
             question_type: str = '',
             ) -> None:
+        """
+        Initialize quiz parameters, fetch question data, and build Question objects.
+        
+        Args:
+            amount: Number of questions requested from OpenTDB.
+            category: OpenTDB category id, or an empty string for any category.
+            difficulty: OpenTDB difficulty value, or an empty string for any difficulty.
+            question_type: OpenTDB question type, or an empty string for any type.
+        """
         self.questions_list: list[Question] = []
         self.amount = amount
         self.category = category

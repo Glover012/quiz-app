@@ -31,11 +31,6 @@ QLabel#welcomeLabel {
     font-weight: bold;
 }
 
-QLabel#selectParamsLabel {
-    font-size: 20px;
-    border-radius: 10px;
-}
-
 QLabel#quizResultLabel {
     font-size: 20px;
     font-weight: bold;

@@ -44,8 +44,24 @@ class OpenTriviaClient:
             difficulty: str = '',
             question_type: str = '',
             ) -> OpenTriviaAPIResponseFormat:
-        """Load quiz questions data from OpenTDB API based on given parameters."""
+        """
+        Request quiz question data from the OpenTDB API.
 
+        Args:
+            amount: Number of questions to request.
+            category: Optional OpenTDB category id.
+            difficulty: Optional difficulty value.
+            question_type: Optional OpenTDB question type.
+
+        Returns:
+            Parsed OpenTDB response containing response_code and results.
+
+        Raises:
+            NoQuestionsFoundError: If OpenTDB returns an empty results list.
+            NotEnoughQuestionsError: If OpenTDB returns fewer questions than requested.
+            OpenTriviaClientError: If the request fails, times out, or returns 
+            invalid/unexpected data.
+        """
         params = {
             'amount' : amount
         }

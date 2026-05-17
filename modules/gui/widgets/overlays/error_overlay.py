@@ -48,6 +48,16 @@ class ErrorOverlay(QWidget):
             error: Exception,
             for_seconds: int
             ) -> None:
+        """
+        Display a temporary user-facing error message.
+
+        Args:
+            error: Exception whose message should be shown to the user.
+            for_seconds: Number of seconds before the overlay is hidden.
+
+        Notes:
+            Generic OpenTriviaClientError messages get an additional retry hint.
+        """
         label_text = str(error)
         if type(error) is OpenTriviaClientError:
             label_text += " Try again in a few seconds."

@@ -18,8 +18,11 @@ class WorkerThreadControllerError(Exception):
 
 class WorkerThreadController(QObject):
     """
-    Run QThread for one worker and clean it up after completion. 
-    Emit thread related signals.
+    Own and manage a QThread for a single worker object.
+
+    The controller moves the worker to a background thread, connects the worker
+    and thread lifecycle signals, starts the thread, and schedules Qt cleanup
+    with deleteLater after the worker finishes.
     """
 
     thread_started = Signal()
@@ -38,7 +41,7 @@ class WorkerThreadController(QObject):
         """Setup thread and worker."""
         self.worker.moveToThread(self.worker_thread)
 
-    def _connect_signals(self):
+    def _connect_signals(self) -> None:
         self.worker_thread.started.connect(self._on_thread_started)
         self.worker_thread.started.connect(self.thread_started.emit)
         self.worker_thread.started.connect(self.worker.run)
@@ -69,7 +72,12 @@ class WorkerThreadController(QObject):
         return self.running
     
     def stop(self) -> None:
-        """Interrupt and quit thread."""
+        """
+        Request the worker thread to stop and quit its event loop.
+
+        This does not forcibly terminate running Python code. The thread stops
+        cleanly once the worker returns control to the Qt event loop.
+        """
         if self.worker_thread.isRunning():
             logger.info("Worker thread stop requested.")
             # requests interruption flag, so worker can react when it regains control

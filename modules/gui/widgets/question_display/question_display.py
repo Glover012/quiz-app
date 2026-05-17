@@ -77,10 +77,11 @@ class QuestionDisplay(QWidget):
                 widget.setProperty('answerState', 'incorrect')
             # Color button text based on which contain correct answer
             for button in widget.a_button_group.buttons():
-                if widget.question.correct_answer in button.text():
-                    button.setProperty('containAnswer', 'correct')
-                else:
-                    button.setProperty('containAnswer', 'incorrect')
+                answer = button.property("answer")
+                button.setProperty(
+                    "containAnswer",
+                    "correct" if answer == widget.question.correct_answer else "incorrect",
+                    )
                 button.style().polish(button) # Refresh button style
                 button.setEnabled(False) # Disable all button from manipulation
             # Refresh widget style to apply new properties

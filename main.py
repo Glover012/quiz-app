@@ -10,7 +10,7 @@ from modules import MainWindow
 
 logger = logging.getLogger(__name__)
 
-def set_current_working_directory():
+def set_current_working_directory() -> None:
     # Set CWD to project root, so that relative paths work correctly
     os.chdir(os.path.dirname(__file__))
 

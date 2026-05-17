@@ -12,7 +12,7 @@ class LoadingOverlay(QWidget):
         self._setup_loading_label()
         self._setup_progress_bar()
 
-    def _setup_overlay(self):
+    def _setup_overlay(self) -> None:
         self.setObjectName("loadingOverlay")
         self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
         self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, False)

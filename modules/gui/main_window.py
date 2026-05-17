@@ -13,8 +13,14 @@ logger = logging.getLogger(__name__)
 
 class MainWindow(QMainWindow):
     """
-    Main window that coordinates navigation, question loading, and quiz display.
-    Has own closeEvent. Beaware that timeout of question loading is 3 seconds.
+    Main application window and top-level GUI coordinator.
+
+    MainWindow owns the central stacked layout, menu bar, loading/error overlays,
+    and the question-loading worker controller. It coordinates navigation between
+    the welcome screen, start screen, and question display.
+
+    Question loading is delegated to a worker thread. The OpenTDB request timeout
+    is configured in OpenTriviaClient.
     """
 
     def __init__(self) -> None:
@@ -39,7 +45,7 @@ class MainWindow(QMainWindow):
         self.central_widget.setLayout(self.main_layout)
         self.setCentralWidget(self.central_widget)
     
-    def _init_default_variables(self):
+    def _init_default_variables(self) -> None:
         # List of ignored widgets, from MainWindow clean method
         # Used for overlays
         self.ignored = []
@@ -116,11 +122,13 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def _show_loading_screen(self) -> None:
+        """Display loading screen overlay. Disable menu_bar control."""
         self.menu_bar.setEnabled(False)
         self.loading_overlay.show_loading()
 
     @Slot()
     def _hide_loading_screen(self) -> None:
+        """Hide loading screen overlay. Enable menu_bar control."""
         self.menu_bar.setEnabled(True)
         self.loading_overlay.hide_loading()
 

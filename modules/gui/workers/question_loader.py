@@ -24,6 +24,14 @@ class QuestionLoader(QObject):
 
     @Slot()
     def run(self) -> None:
+        """
+        Load questions in a worker thread and emit the result through Qt signals.
+
+        Emits:
+            loaded: With a Questions instance when loading succeeds.
+            error: With the raised exception when loading fails.
+            finished: Always emitted after success or failure.
+        """
         try:
             logger.info(
                 "QuestionLoader started: amount=%s, category=%s, difficulty=%s, type=%s",
