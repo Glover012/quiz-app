@@ -1,16 +1,14 @@
-from typing import Any
-
 import logging
 import html
 import random
 
-from .opentdb_client import OpenTriviaClient, OpenTriviaClientError
+from .opentdb_client import OpenTriviaClient, OpenTriviaClientError, OpenTriviaAPIResponseFormat
 
 logger = logging.getLogger(__name__)
 
 
 class Question:
-    """Represents a single quiz question with features."""
+    """Data object for one quiz question and its scoring data."""
     
     def __init__(
             self, tp: str,
@@ -33,7 +31,16 @@ class Question:
 
 
 class Questions:
-    """Loads questions from OpenTDB and converts them into Question objects."""
+    """
+    Fetch quiz questions from OpenTDB and convert them into Question objects.
+
+    Creating an instance performs an HTTP request through OpenTriviaClient.
+    The loaded questions are stored in questions_list.
+
+    Raises:
+        OpenTriviaClientError: If the API request fails or the response cannot
+            be converted into valid quiz questions.
+    """
 
     def __init__(
             self,
@@ -42,6 +49,15 @@ class Questions:
             difficulty: str = '',
             question_type: str = '',
             ) -> None:
+        """
+        Initialize quiz parameters, fetch question data, and build Question objects.
+        
+        Args:
+            amount: Number of questions requested from OpenTDB.
+            category: OpenTDB category id, or an empty string for any category.
+            difficulty: OpenTDB difficulty value, or an empty string for any difficulty.
+            question_type: OpenTDB question type, or an empty string for any type.
+        """
         self.questions_list: list[Question] = []
         self.amount = amount
         self.category = category
@@ -51,7 +67,7 @@ class Questions:
         questions_data = self._get_question_data_from_api_client()
         self._questions_data_to_question_objects(questions_data)
 
-    def _get_question_data_from_api_client(self) -> dict[str, Any]:
+    def _get_question_data_from_api_client(self) -> OpenTriviaAPIResponseFormat:
         api_client = OpenTriviaClient()
         try:
             questions_data = api_client.get_questions_data(
@@ -64,11 +80,12 @@ class Questions:
         except OpenTriviaClientError as error:
             raise error
 
-    def _questions_data_to_question_objects(self, questions_data: dict[str, Any]) -> None:
+    def _questions_data_to_question_objects(self, questions_data: OpenTriviaAPIResponseFormat) -> None:
         """Convert raw API question data into Question objects."""
 
         for question_params in questions_data["results"]:
-            # Question parameters to variables, html.unescape to format html symbols
+            # Question parameters to variables, 
+            # html.unescape to decode HTML entities from fields
             tp = question_params["type"]
             difficulty = question_params["difficulty"]
             category = html.unescape(question_params["category"])

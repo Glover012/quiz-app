@@ -23,6 +23,7 @@ class ResultWidget(QFrame):
 
     def _setup_layout(self) -> None:
         self.main_layout = QVBoxLayout()
+        self.main_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.setLayout(self.main_layout)
     
     def _display_results(self) -> None:

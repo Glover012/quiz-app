@@ -9,11 +9,13 @@ from modules.questions.opentdb_client import OpenTriviaClient, OpenTriviaClientE
 class TestOpenTriviaClient(unittest.TestCase):
 
     # Run before every test method
-    def setUp(self):
+    def setUp(self) -> None:
+        """Prepare API client instance."""
         self.client = OpenTriviaClient()
 
     @patch("modules.questions.opentdb_client.requests.get")
-    def test_success_get_questions_data_with_default_params(self, mock_requests_get: MagicMock):
+    def test_success_get_questions_data_with_default_params(self, mock_requests_get: MagicMock) -> None:
+        """Test successful data retrieval with default request parameters."""
         # Mock response data
         mock_response = Mock()
         mock_response.status_code = 200
@@ -37,14 +39,15 @@ class TestOpenTriviaClient(unittest.TestCase):
         mock_requests_get.assert_called_once_with(
             OpenTriviaClient.BASE_URL,
             params={"amount": 1},
-            timeout=10,
+            timeout=3,
         )
 
         # Check whether raise_for_status has been called on mocked response
         mock_response.raise_for_status.assert_called_once()
 
     @patch("modules.questions.opentdb_client.requests.get")
-    def test_success_get_questions_data_with_all_params(self, mock_requests_get: MagicMock):
+    def test_success_get_questions_data_with_all_params(self, mock_requests_get: MagicMock) -> None:
+        """Test successful data retrieval with all request parameters."""
         mock_response = Mock()
         mock_response.status_code = 200
         mock_response.json.return_value = {
@@ -73,13 +76,14 @@ class TestOpenTriviaClient(unittest.TestCase):
                 "difficulty": "easy",
                 "type": "boolean",
                 },
-            timeout=10,
+            timeout=3,
         )
 
         mock_response.raise_for_status.assert_called_once()
 
     @patch("modules.questions.opentdb_client.requests.get")
-    def test_get_questions_data_raises_error_when_no_questions(self, mock_requests_get: MagicMock):
+    def test_get_questions_data_raises_error_when_no_questions(self, mock_requests_get: MagicMock) -> None:
+        """Test that an empty results list raises OpenTriviaClientError."""
         mock_response = Mock()
         mock_response.status_code = 200
         mock_response.json.return_value = {
@@ -97,7 +101,8 @@ class TestOpenTriviaClient(unittest.TestCase):
             )
 
     @patch("modules.questions.opentdb_client.requests.get")
-    def test_get_questions_data_raises_error_when_not_enough_questions(self, mock_requests_get: MagicMock):
+    def test_get_questions_data_raises_error_when_not_enough_questions(self, mock_requests_get: MagicMock) -> None:
+        """Test that too few questions raises OpenTriviaClientError."""
         mock_response = Mock()
         mock_response.status_code = 200
         mock_response.json.return_value = {
@@ -117,7 +122,8 @@ class TestOpenTriviaClient(unittest.TestCase):
             )
 
     @patch("modules.questions.opentdb_client.requests.get")
-    def test_get_questions_data_raises_timeout_error(self, mock_requests_get: MagicMock):
+    def test_get_questions_data_raises_timeout_error(self, mock_requests_get: MagicMock) -> None:
+        """Test OpenTriviaClientError timeout error."""
         mock_requests_get.side_effect = requests.exceptions.Timeout
 
         with self.assertRaises(OpenTriviaClientError) as error_context:
@@ -129,7 +135,8 @@ class TestOpenTriviaClient(unittest.TestCase):
             )
 
     @patch("modules.questions.opentdb_client.requests.get")
-    def test_get_questions_data_raises_connection_error(self, mock_requests_get: MagicMock):
+    def test_get_questions_data_raises_connection_error(self, mock_requests_get: MagicMock) -> None:
+        """Test OpenTriviaClientError connection error."""
         mock_requests_get.side_effect = requests.exceptions.ConnectionError
 
         with self.assertRaises(OpenTriviaClientError) as error_context:
@@ -141,7 +148,8 @@ class TestOpenTriviaClient(unittest.TestCase):
             )
 
     @patch("modules.questions.opentdb_client.requests.get")
-    def test_get_questions_data_raises_http_error(self, mock_requests_get: MagicMock):
+    def test_get_questions_data_raises_http_error(self, mock_requests_get: MagicMock) -> None:
+        """Test OpenTriviaClientError HTTP error."""
         mock_response = Mock()
         mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError
 
@@ -158,7 +166,8 @@ class TestOpenTriviaClient(unittest.TestCase):
         mock_response.raise_for_status.assert_called_once()
 
     @patch("modules.questions.opentdb_client.requests.get")
-    def test_get_questions_data_raises_value_error(self, mock_requests_get: MagicMock):
+    def test_get_questions_data_raises_value_error(self, mock_requests_get: MagicMock) -> None:
+        """Test that invalid JSON responses raise OpenTriviaClientError."""
         mock_response = Mock()
         mock_response.status_code = 200
         mock_response.json.side_effect = ValueError
@@ -174,7 +183,8 @@ class TestOpenTriviaClient(unittest.TestCase):
             )
 
     @patch("modules.questions.opentdb_client.requests.get")
-    def test_get_questions_data_raises_key_error(self, mock_requests_get: MagicMock):
+    def test_get_questions_data_raises_key_error(self, mock_requests_get: MagicMock) -> None:
+        """Test that missing response keys raise OpenTriviaClientError."""
         mock_response = Mock()
         mock_response.status_code = 200
         mock_response.json.return_value = {}
@@ -190,7 +200,8 @@ class TestOpenTriviaClient(unittest.TestCase):
             )
 
     @patch("modules.questions.opentdb_client.requests.get")
-    def test_get_questions_data_raises_type_error(self, mock_requests_get: MagicMock):
+    def test_get_questions_data_raises_type_error(self, mock_requests_get: MagicMock) -> None:
+        """Test that invalid response types raise OpenTriviaClientError."""
         mock_response = Mock()
         mock_response.status_code = 200
         mock_response.json.return_value = 0
@@ -206,7 +217,8 @@ class TestOpenTriviaClient(unittest.TestCase):
             )
 
     @patch("modules.questions.opentdb_client.requests.get")
-    def test_get_questions_data_raises_unexpected_error(self, mock_requests_get: MagicMock):
+    def test_get_questions_data_raises_unexpected_error(self, mock_requests_get: MagicMock) -> None:
+        """Test OpenTriviaClientError unexpected error."""
         mock_response = Mock()
         mock_response.status_code = 200
         mock_response.json.side_effect = ZeroDivisionError

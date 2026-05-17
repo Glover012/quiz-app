@@ -37,24 +37,26 @@ class QuestionWidget(QFrame):
         self.a_button_group = QButtonGroup()
         for i, answer in enumerate(self.question.all_answers):
             button = QRadioButton(
-                f'{f'{index[i]}. ' if self.question.tp == "multiple" else ""}{answer}')
+                f'{f'{index[i]}. ' if self.question.tp == "multiple" else ""}{answer}'
+                )
             button.setObjectName('questionAnswerRadioButton')
+            button.setProperty("answer", answer)
             self.a_button_group.addButton(button)
             self.main_layout.addWidget(button)
         self.a_button_group.buttonClicked.connect(self._on_answer_button_clicked)
 
     def _add_question_info_label(self) -> None:
-        infoLabel = QLabel(
+        info_label = QLabel(
             f'Category: {self.question.category} |'
             f'Difficulty: {self.question.difficulty} |'
             f'Points: {self.question.points}'
             )
-        infoLabel.setObjectName('questionInfoLabel')
-        self.main_layout.addWidget(infoLabel)
+        info_label.setObjectName('questionInfoLabel')
+        self.main_layout.addWidget(info_label)
 
     def _on_answer_button_clicked(self, button: QRadioButton) -> None:
-        self.user_answer = button.text()
-        if self.question.correct_answer in self.user_answer:
+        self.user_answer = str(button.property("answer"))
+        if self.question.correct_answer == self.user_answer:
             self.correct_answer = True
         else:
             self.correct_answer = False

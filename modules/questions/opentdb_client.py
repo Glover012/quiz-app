@@ -1,4 +1,4 @@
-from typing import Any, ClassVar
+from typing import ClassVar, TypedDict
 
 import logging
 import requests
@@ -8,6 +8,28 @@ logger = logging.getLogger(__name__)
 
 class OpenTriviaClientError(Exception):
     """Raised when fetching questions from OpenTDB fails."""
+
+
+class NoQuestionsFoundError(OpenTriviaClientError):
+    """Raised when OpenTDB returns no questions for the selected parameters."""
+
+
+class NotEnoughQuestionsError(OpenTriviaClientError):
+    """Raised when OpenTDB returns fewer questions than requested."""
+
+
+class OpenTriviaAPIQuestionFormat(TypedDict):
+    type: str
+    difficulty: str
+    category: str
+    question: str
+    correct_answer: str
+    incorrect_answers: list[str]
+
+
+class OpenTriviaAPIResponseFormat(TypedDict):
+    response_code: int
+    results: list[OpenTriviaAPIQuestionFormat]
 
 
 class OpenTriviaClient:
@@ -21,9 +43,25 @@ class OpenTriviaClient:
             category: str = '',
             difficulty: str = '',
             question_type: str = '',
-            ) -> dict[str, Any]:
-        """Load quiz questions data from OpenTDB API based on given parameters."""
+            ) -> OpenTriviaAPIResponseFormat:
+        """
+        Request quiz question data from the OpenTDB API.
 
+        Args:
+            amount: Number of questions to request.
+            category: Optional OpenTDB category id.
+            difficulty: Optional difficulty value.
+            question_type: Optional OpenTDB question type.
+
+        Returns:
+            Parsed OpenTDB response containing response_code and results.
+
+        Raises:
+            NoQuestionsFoundError: If OpenTDB returns an empty results list.
+            NotEnoughQuestionsError: If OpenTDB returns fewer questions than requested.
+            OpenTriviaClientError: If the request fails, times out, or returns 
+            invalid/unexpected data.
+        """
         params = {
             'amount' : amount
         }
@@ -37,14 +75,19 @@ class OpenTriviaClient:
         logger.debug("Fetching questions from OpenTDB with params: %s", params)
 
         try:
-            response = requests.get(self.BASE_URL, params=params, timeout=10)
+            response = requests.get(self.BASE_URL, params=params, timeout=3)
             logger.debug("OpenTDB response status: %s", response.status_code)
             response.raise_for_status()
             data = response.json()
             if not data['results']:
-                raise OpenTriviaClientError('No questions found for selected parameters. Try different category, difficulty or type.')
+                raise NoQuestionsFoundError('No questions found for selected parameters. Try different category, difficulty or type.')
             elif int(amount) > len(data['results']):
-                raise OpenTriviaClientError('Not enough questions found for the selected parameters. Try lower number.')
+                raise NotEnoughQuestionsError('Not enough questions found for the selected parameters. Try lower number.')
+            logger.debug(
+                "OpenTDB response parsed: response_code=%s, results=%s",
+                data.get("response_code"),
+                len(data.get("results", [])),
+                )
             return data
    
         except requests.exceptions.Timeout as error:

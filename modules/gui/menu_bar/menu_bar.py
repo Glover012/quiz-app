@@ -1,24 +1,25 @@
-from __future__ import annotations
-
-from typing import TYPE_CHECKING
-
 from PySide6.QtWidgets import QMenuBar
-
-if TYPE_CHECKING:
-    from ..main_window import MainWindow
+from PySide6.QtCore import Signal
 
 from .menus import QuizMenu, HelpMenu
 
 
 class MenuBar(QMenuBar):
-    """Class that describes MenuBar for MainWindow."""
+    """Application menu bar that forwards menu actions signals."""
 
-    def __init__(self, main_window: MainWindow) -> None:
+    action_requested = Signal(object)
+
+    def __init__(self) -> None:
         super().__init__()
-        self.main_window = main_window
-        self._add_menus()
+        self._add_quiz_menu()
+        self._add_help_menu()
 
-    def _add_menus(self) -> None:
-        """Load menus to MenuBar."""
-        self.addMenu(QuizMenu(self.main_window))
-        self.addMenu(HelpMenu(self.main_window))
+    def _add_quiz_menu(self) -> None:
+        self.quiz_menu = QuizMenu()
+        self.quiz_menu.action_requested.connect(self.action_requested.emit)
+        self.addMenu(self.quiz_menu)
+
+    def _add_help_menu(self) -> None:
+        self.help_menu = HelpMenu()
+        self.help_menu.action_requested.connect(self.action_requested.emit)
+        self.addMenu(self.help_menu)
