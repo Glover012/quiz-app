@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
     def _setup_window(self) -> None:
         self.setObjectName("mainWindow")
         self.setWindowTitle('Quiz')
-        self.resize(768, 512)
+        self.resize(896, 512)
 
     def _setup_layout(self) -> None:
         self.main_layout = QStackedLayout()
