@@ -1,54 +1,159 @@
-# Quiz App - Data Flow
+# 🔄 Quiz App - Data Flow
 
-## Diagram
+This document shows how data moves through the application. `MainWindow` acts as the central coordinator: it owns the main layout, switches between screens, starts background loading, and routes success or error signals back to the GUI.
+
+## 🚀 Table of Contents
+- [🔄 Quiz App - Data Flow](#-quiz-app---data-flow)
+  - [🚀 Table of Contents](#-table-of-contents)
+  - [🔎 Simplified Application Flow](#-simplified-application-flow)
+  - [🧩 Detailed Application Flow](#-detailed-application-flow)
+  - [📘 Description](#-description)
+
+## 🔎 Simplified Application Flow
 ```mermaid
-flowchart TD
+flowchart LR
     Main["main.py"]
     Window["MainWindow"]
     Start["StartDisplay"]
-    Params["QuestionParamsWidget"]
-    WorkerController["WorkerThreadController"]
     Loader["QuestionLoader"]
-    Questions["Questions"]
-    Client["OpenTriviaClient"]
+    Data["Questions + OpenTriviaClient"]
     API["OpenTDB API"]
     Display["QuestionDisplay"]
-    QuestionWidgets["QuestionWidget list"]
     Result["ResultWidget"]
-    Loading["LoadingOverlay"]
     Error["ErrorOverlay"]
 
-    Main -->|"creates QApplication<br/>configures logging<br/>loads styles"| Window
+    Main --> Window
+    Window --> Start
+    Start -->|"QuestionParams"| Window
+    Window -->|"starts background loading"| Loader
+    Loader --> Data
+    Data --> API
+    API --> Data
+    Data --> Loader
+    Loader -->|"loaded questions"| Window
+    Window --> Display
+    Display --> Result
+    Loader -->|"error"| Window
+    Window --> Error
+    Window -->|"returns to setup"| Start
+```
 
-    Window -->|"shows setup screen"| Start
-    Start -->|"reads selected params"| Params
-    Params -->|"QuestionParams"| Start
+## 🧩 Detailed Application Flow
+```mermaid
+flowchart LR
+    subgraph Startup["Application startup"]
+        Main["main.py"]
+        App["QApplication"]
+        Logging["Logging config"]
+        Styles["styles.css"]
+        Window["MainWindow"]
+    end
+
+    subgraph Navigation["Navigation and layout"]
+        MenuBar["MenuBar"]
+        QuizMenu["QuizMenu"]
+        HelpMenu["HelpMenu"]
+        Welcome["WelcomeLabel"]
+        Stack["QStackedLayout"]
+    end
+
+    subgraph Setup["Quiz setup"]
+        Start["StartDisplay"]
+        StartButton["StartButtonWidget"]
+        Params["QuestionParamsWidget"]
+        ParamFrames["ParamFrame widgets"]
+        QuestionParams["QuestionParams"]
+    end
+
+    subgraph Loading["Background question loading"]
+        Controller["WorkerThreadController"]
+        Thread["QThread"]
+        Loader["QuestionLoader"]
+        LoadingOverlay["LoadingOverlay"]
+    end
+
+    subgraph Data["Question data layer"]
+        Questions["Questions"]
+        Question["Question objects"]
+        Client["OpenTriviaClient"]
+        ApiParams["api_params.py"]
+        API["OpenTDB API"]
+    end
+
+    subgraph Quiz["Quiz display and scoring"]
+        Display["QuestionDisplay"]
+        QuestionWidgets["QuestionWidget list"]
+        AnswerButtons["QRadioButton answers"]
+        Result["ResultWidget"]
+        Repeat["Repeat Quiz"]
+    end
+
+    subgraph Errors["Error handling"]
+        ErrorOverlay["ErrorOverlay"]
+        NoQuestions["NoQuestionsFoundError"]
+        NotEnough["NotEnoughQuestionsError"]
+        ClientError["OpenTriviaClientError"]
+    end
+
+    Main --> App
+    Main --> Logging
+    Main --> Styles
+    Main --> Window
+
+    Window --> Stack
+    Window --> MenuBar
+    Window --> Welcome
+    MenuBar --> QuizMenu
+    MenuBar --> HelpMenu
+    QuizMenu -->|"Start Quiz"| Window
+    QuizMenu -->|"Exit"| Window
+    HelpMenu -->|"About"| Window
+
+    Window -->|"shows setup"| Start
+    Start --> StartButton
+    Start --> Params
+    Params --> ParamFrames
+    Params --> ApiParams
+    StartButton -->|"clicked"| Start
+    Start -->|"reads selected values"| Params
+    Params -->|"returns"| QuestionParams
     Start -->|"start_quiz_requested"| Window
 
-    Window -->|"creates worker and thread controller"| WorkerController
-    WorkerController -->|"runs in QThread"| Loader
-    WorkerController -->|"thread_started / thread_finished"| Loading
+    Window -->|"creates"| Loader
+    Window -->|"creates"| Controller
+    Controller --> Thread
+    Thread -->|"runs"| Loader
+    Controller -->|"started / finished"| LoadingOverlay
 
     Loader -->|"creates"| Questions
     Questions -->|"uses"| Client
     Client -->|"HTTP request"| API
     API -->|"JSON response"| Client
-    Client -->|"parsed API data"| Questions
-    Questions -->|"Question objects"| Loader
+    Client -->|"API response"| Questions
+    Questions -->|"builds"| Question
+    Questions -->|"stores questions_list"| Loader
 
-    Loader -->|"loaded(Questions)"| Window
+    Loader -->|"loaded"| Window
     Window -->|"passes questions_list"| Display
     Display -->|"creates"| QuestionWidgets
-    QuestionWidgets -->|"selected answers"| Display
+    QuestionWidgets --> AnswerButtons
+    AnswerButtons -->|"selected answer"| QuestionWidgets
+    QuestionWidgets -->|"answer state"| Display
     Display -->|"calculates score"| Result
+    Display -->|"repeat_button_clicked"| Repeat
+    Repeat --> Window
 
-    Loader -->|"error(Exception)"| Window
-    WorkerController -->|"thread_error(Exception)"| Window
-    Window -->|"shows user message"| Error
-    Window -->|"returns error to setup screen"| Start
+    Client --> NoQuestions
+    Client --> NotEnough
+    Client --> ClientError
+    Loader -->|"error"| Window
+    Controller -->|"thread_error"| Window
+    Window -->|"shows"| ErrorOverlay
+    Window -->|"returns error"| Start
+    Start -->|"marks or resets params"| Params
 ```
 
-## Description
+## 📘 Description
 The application data flow is organized around `MainWindow`:
 
 1. `main.py`
