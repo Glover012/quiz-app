@@ -6,7 +6,7 @@ from datetime import datetime
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QFont
 
-from modules import MainWindow
+from modules.gui import MainWindow
 
 logger = logging.getLogger(__name__)
 
