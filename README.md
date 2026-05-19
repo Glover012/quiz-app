@@ -1,4 +1,9 @@
 # 🎯 Quiz App
+![Python](https://img.shields.io/badge/Python-3.11%2B-blue)
+![PySide6](https://img.shields.io/badge/GUI-PySide6-green)
+![Tests](https://github.com/Glover012/quiz-app/actions/workflows/tests.yml/badge.svg?branch=main)
+![License](https://img.shields.io/github/license/Glover012/quiz-app)
+
 A simple quiz application built in Python with a PySide6 GUI.
 
 ## 🚀 Table of contents
@@ -7,6 +12,8 @@ A simple quiz application built in Python with a PySide6 GUI.
   - [✨ Features](#-features)
   - [🎬 Demo](#-demo)
   - [📘 About the project](#-about-the-project)
+  - [🛠️ Technical highlights](#️-technical-highlights)
+  - [🧠 What I learned](#-what-i-learned)
   - [📋 Requirements](#-requirements)
   - [⚙️ Installation](#️-installation)
       - [💻 Windows PowerShell](#-windows-powershell)
@@ -16,7 +23,10 @@ A simple quiz application built in Python with a PySide6 GUI.
   - [🗂️ Project structure](#️-project-structure)
   - [🔄 Application data flow](#-application-data-flow)
   - [📌 Project status](#-project-status)
+  - [🚧 Known limitations](#-known-limitations)
   - [🛣 Roadmap](#-roadmap)
+    - [✅ Completed](#-completed)
+    - [📝 Planned](#-planned)
   - [🧪 Tests](#-tests)
       - [💻 Running tests in Windows PowerShell](#-running-tests-in-windows-powershell)
   - [⚠️ Error triggers](#️-error-triggers)
@@ -37,6 +47,8 @@ A simple quiz application built in Python with a PySide6 GUI.
 - Per-session file logging
 
 ## 🎬 Demo
+Additional widget screenshots are available in the [widget presentation](docs/images/widget-presentation.md).
+
 ![Quiz App Demo](docs/quiz-app-demo.gif)
 
 ## 📘 About the project
@@ -44,14 +56,31 @@ This project was created as a learning exercise and my first complete desktop GU
 
 It started as a simple console quiz made during a Python course. Later, I expanded it with a graphical interface, API integration, logging, error handling, stylesheets, type hints and a cleaner project structure.
 
-During development, I focused on:
-- Building a GUI with PySide6
-- Working with external API data
-- Improving code organization
-- Maintaining clean internal documentation
-- Following PEP 8 standards
-
 The application allows selecting up to 100 questions, even though the Open Trivia Database API documentation states that up to 50 questions can be requested at once. This is intentional and is used to trigger error handling paths.
+
+## 🛠️ Technical highlights
+- PySide6 desktop GUI with multiple application screens
+- Background question loading handled with QThread and Qt signals
+- OpenTDB API client with timeout handling and custom exceptions
+- Unit tests covering API responses, error handling and question model behavior
+- Mocked external HTTP requests for reliable, offline test execution
+- Per-session file logging with configurable console log level
+- Clear separation between GUI widgets, worker classes and question logic
+- Application data flow documented with a Mermaid diagram
+
+## 🧠 What I learned
+While building this project, I practiced:
+
+- Building a desktop GUI application with PySide6
+- Structuring a Python project into smaller, focused modules
+- Separating GUI code, background workers, API access and data models
+- Working with external API data and handling unreliable responses
+- Using Qt signals and QThread for background question loading
+- Writing cleaner, PEP 8-friendly Python code
+- Adding type hints and TypedDict definitions for API responses and quiz parameters
+- Writing unit tests with unittest.mock, including mocked HTTP responses and patch decorators
+- Setting up GitHub Actions to run unit tests automatically
+- Documenting application flow and architecture with Markdown and Mermaid
 
 ## 📋 Requirements
 - Python 3.11+
@@ -92,45 +121,62 @@ python main.py
 
 ## 🗂️ Project structure
     quiz-app/
-    ├── docs/                         # Demo and application data flow
-    ├── modules/                      # Application source code
-    │   ├── gui/                      # PySide6 GUI layer
-    │   │   ├── menu_bar/             # Application menu bar
+    ├── .github/                          # GitHub repository configuration
+    │   └── workflows/                    # GitHub Actions workflows
+    ├── docs/                             # Demo, screenshots and application documentation
+    │   └── images/                       # Widget screenshots and presentation page
+    ├── modules/                          # Application source code
+    │   ├── gui/                          # PySide6 GUI layer
+    │   │   ├── menu_bar/                 # Application menu bar
     │   │   │   └── menus/
-    │   │   ├── styles/               # Qt stylesheet file
-    │   │   ├── widgets/              # GUI widgets
-    │   │   │   ├── overlays/         # Loading and error overlays
-    │   │   │   ├── question_display/ # Quiz question display screen
+    │   │   ├── styles/                   # Qt stylesheet file
+    │   │   ├── widgets/                  # GUI widgets
+    │   │   │   ├── overlays/             # Loading and error overlays
+    │   │   │   ├── question_display/     # Quiz question display screen
     │   │   │   │   └── components/
-    │   │   │   └── start_display/    # Quiz setup/start screen
+    │   │   │   └── start_display/        # Quiz setup/start screen
     │   │   │       └── components/
-    │   │   └── workers/              # Background worker and thread controller
-    │   └── questions/                # Quiz data, API parameters and OpenTDB client
-    ├── tests/                        # Unit tests and test API data
-    ├── main.py                       # Application entry point
-    ├── requirements.txt
+    │   │   └── workers/                  # Background worker and thread controller
+    │   └── questions/                    # Quiz data, API parameters and OpenTDB client
+    ├── tests/                            # Unit tests and test API data
+    ├── main.py                           # Application entry point
+    ├── requirements.txt                  # Project dependencies
+    ├── CHANGELOG.md                      # Release history
     ├── README.md
     └── LICENSE
 
 ## 🔄 Application data flow
-The application data flow is described in [docs/application-data-flow.md](docs/application-data-flow.md).
+The application data flow and module structure are described in [docs/application-data-flow.md](docs/application-data-flow.md).
 
 ## 📌 Project status
 The application is functional. The main planned improvement is adding GUI logic tests.
 
+## 🚧 Known limitations
+- The application depends on an internet connection
+- GUI behavior is not yet covered by automated tests
+- The Questions model still loads API data during initialization and is planned to be refactored
+- The app was tested manually on Windows
+
 ## 🛣 Roadmap
-Planned improvements:
+
+### ✅ Completed
 - [x] Initial basic version
 - [x] Unit tests
 - [x] Refactor application flow to use Qt signals
 - [x] Move question loading out of the GUI layer into a dedicated thread
 - [x] Add loading overlay
 - [x] Add file logging
+- [x] Add GitHub Actions test workflow
+- [x] Add Changelog
+
+### 📝 Planned
 - [ ] Refactor the Questions model so its constructor does not immediately load questions from the API
 - [ ] Add GUI logic tests
 
 ## 🧪 Tests
 The application includes unit tests for the question models, the OpenTDB API client, and API error handling.
+
+Unit tests are also run automatically with GitHub Actions on pushes to `main` and `dev`, pull requests to `main`, and manual workflow runs.
 
 #### 💻 Running tests in Windows PowerShell
 ```powershell
