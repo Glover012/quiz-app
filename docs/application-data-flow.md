@@ -5,195 +5,144 @@ This document shows how data moves through the application. `MainWindow` acts as
 ## 🚀 Table of Contents
 - [🔄 Quiz App - Data Flow](#-quiz-app---data-flow)
   - [🚀 Table of Contents](#-table-of-contents)
-  - [🔎 Simplified Application Flow](#-simplified-application-flow)
-  - [🧩 Detailed Application Flow](#-detailed-application-flow)
+  - [🔎 Application Flow](#-application-flow)
   - [📘 Description](#-description)
 
-## 🔎 Simplified Application Flow
+## 🔎 Application Flow
+
 ```mermaid
 flowchart LR
-    Main["main.py"]
-    Window["MainWindow"]
-    Start["StartDisplay"]
-    Loader["QuestionLoader"]
+    MainWindow["MainWindow"]
+    MenuBar["MenuBar"]
+    Quiz["Quiz"]
+    About["About"]
+    WelcomeLabel["WelcomeLabel"]
+    ErrorOverlay["ErrorOverlay"]
+    StartDisplay["StartDisplay"]
+    StartDisplayWidgets["Button + Params Widgets"]
+    WorkerThreadController["WorkerThreadController"]
+    LoadingOverlay["LoadingOverlay"]
+    QuestionLoader["QuestionLoader"]
     Data["Questions + OpenTriviaClient"]
     API["OpenTDB API"]
-    Display["QuestionDisplay"]
+    QuestionDisplay["QuestionDisplay"]
+    QuestionWidgets["QuestionWidgets"]
     Result["ResultWidget"]
-    Error["ErrorOverlay"]
 
-    Main --> Window
-    Window --> Start
-    Start -->|"QuestionParams"| Window
-    Window -->|"starts background loading"| Loader
-    Loader --> Data
-    Data --> API
-    API --> Data
-    Data --> Loader
-    Loader -->|"loaded questions"| Window
-    Window --> Display
-    Display --> Result
-    Loader -->|"error"| Window
-    Window --> Error
-    Window -->|"returns to setup"| Start
-```
+    %%MainWindow --> MenuBar
+    MenuBar -.-> |"ACTION"| MainWindow
 
-## 🧩 Detailed Application Flow
-```mermaid
-flowchart LR
-    subgraph Startup["Application startup"]
-        Main["main.py"]
-        App["QApplication"]
-        Logging["Logging config"]
-        Styles["styles.css"]
-        Window["MainWindow"]
-    end
+    Quiz -.->|"START"| MenuBar
+    Quiz -.-> |"EXIT"| MenuBar
+    About -.->|"ABOUT_APP"| MenuBar
 
-    subgraph Navigation["Navigation and layout"]
-        MenuBar["MenuBar"]
-        QuizMenu["QuizMenu"]
-        HelpMenu["HelpMenu"]
-        Welcome["WelcomeLabel"]
-        Stack["QStackedLayout"]
-    end
+    MainWindow -->|"ON_ERROR"| ErrorOverlay
 
-    subgraph Setup["Quiz setup"]
-        Start["StartDisplay"]
-        StartButton["StartButtonWidget"]
-        Params["QuestionParamsWidget"]
-        ParamFrames["ParamFrame widgets"]
-        QuestionParams["QuestionParams"]
-    end
+    MainWindow -->|"ON_LAUNCH"| WelcomeLabel
 
-    subgraph Loading["Background question loading"]
-        Controller["WorkerThreadController"]
-        Thread["QThread"]
-        Loader["QuestionLoader"]
-        LoadingOverlay["LoadingOverlay"]
-    end
+    MainWindow ==> |"START/REPEAT"| StartDisplay
+    MainWindow -.-> |"ERROR"| StartDisplay
+    StartDisplay -.->|"QUESTION_PARAMS"| MainWindow
+    StartDisplay -.->|"ON_ERROR_METHODS"| StartDisplayWidgets
 
-    subgraph Data["Question data layer"]
-        Questions["Questions"]
-        Question["Question objects"]
-        Client["OpenTriviaClient"]
-        ApiParams["api_params.py"]
-        API["OpenTDB API"]
-    end
+    MainWindow --> WorkerThreadController
+    WorkerThreadController -.-> |"STARTED/FINISHED"| LoadingOverlay
+    WorkerThreadController --> |"MOVE_TO_THREAD/RUN"| QuestionLoader
 
-    subgraph Quiz["Quiz display and scoring"]
-        Display["QuestionDisplay"]
-        QuestionWidgets["QuestionWidget list"]
-        AnswerButtons["QRadioButton answers"]
-        Result["ResultWidget"]
-        Repeat["Repeat Quiz"]
-    end
+    MainWindow -->|"QUESTION_PARAMS"| QuestionLoader
+    QuestionLoader -.-> |"ERROR"| MainWindow
+    QuestionLoader --> |"QUESTIONS"| MainWindow
+    QuestionLoader --> |"QUESTION_PARAMS"| Data
+    Data --> |"REQUEST"| API
+    API -->|"JSON"| Data
 
-    subgraph Errors["Error handling"]
-        ErrorOverlay["ErrorOverlay"]
-        NoQuestions["NoQuestionsFoundError"]
-        NotEnough["NotEnoughQuestionsError"]
-        ClientError["OpenTriviaClientError"]
-    end
+    MainWindow ==> |"QUESTIONS"| QuestionDisplay
+    QuestionDisplay -->|"STYLE_ON_FINISH"| QuestionWidgets
+    QuestionDisplay -->|"FINISHED"| Result
+    
+    style MainWindow stroke: #231ff0
 
-    Main --> App
-    Main --> Logging
-    Main --> Styles
-    Main --> Window
+    style ErrorOverlay stroke: #ef4444
+    style LoadingOverlay stroke: #16a34a
 
-    Window --> Stack
-    Window --> MenuBar
-    Window --> Welcome
-    MenuBar --> QuizMenu
-    MenuBar --> HelpMenu
-    QuizMenu -->|"Start Quiz"| Window
-    QuizMenu -->|"Exit"| Window
-    HelpMenu -->|"About"| Window
+    style StartDisplay stroke: #1762ee
+    style QuestionDisplay stroke: #1762ee
+    style WelcomeLabel stroke: #1762ee
 
-    Window -->|"shows setup"| Start
-    Start --> StartButton
-    Start --> Params
-    Params --> ParamFrames
-    Params --> ApiParams
-    StartButton -->|"clicked"| Start
-    Start -->|"reads selected values"| Params
-    Params -->|"returns"| QuestionParams
-    Start -->|"start_quiz_requested"| Window
+    style StartDisplayWidgets stroke: #17b8ee
+    style QuestionWidgets stroke: #17b8ee
+    style Result stroke: #17b8ee
 
-    Window -->|"creates"| Loader
-    Window -->|"creates"| Controller
-    Controller --> Thread
-    Thread -->|"runs"| Loader
-    Controller -->|"started / finished"| LoadingOverlay
-
-    Loader -->|"creates"| Questions
-    Questions -->|"uses"| Client
-    Client -->|"HTTP request"| API
-    API -->|"JSON response"| Client
-    Client -->|"API response"| Questions
-    Questions -->|"builds"| Question
-    Questions -->|"stores questions_list"| Loader
-
-    Loader -->|"loaded"| Window
-    Window -->|"passes questions_list"| Display
-    Display -->|"creates"| QuestionWidgets
-    QuestionWidgets --> AnswerButtons
-    AnswerButtons -->|"selected answer"| QuestionWidgets
-    QuestionWidgets -->|"answer state"| Display
-    Display -->|"calculates score"| Result
-    Display -->|"repeat_button_clicked"| Repeat
-    Repeat --> Window
-
-    Client --> NoQuestions
-    Client --> NotEnough
-    Client --> ClientError
-    Loader -->|"error"| Window
-    Controller -->|"thread_error"| Window
-    Window -->|"shows"| ErrorOverlay
-    Window -->|"returns error"| Start
-    Start -->|"marks or resets params"| Params
+    style WorkerThreadController stroke: #c69716
+    style QuestionLoader stroke: #c69716
+    style Data stroke: #c69716
+    style API stroke: #c69716
 ```
 
 ## 📘 Description
-The application data flow is organized around `MainWindow`:
+The application data flow is organized around `MainWindow`.
 
 1. `main.py`
    - creates the `QApplication`,
-   - configures logging,
-   - loads the stylesheet,
+   - configures console and file logging,
+   - loads the application stylesheet,
    - creates and displays `MainWindow`.
 
 2. `MainWindow`
    - owns the main stacked layout,
-   - displays the welcome screen and `StartDisplay`,
-   - creates loading and error overlays,
-   - coordinates question loading and screen changes.
+   - creates the menu bar, loading overlay and error overlay,
+   - displays the welcome screen and setup screen,
+   - coordinates screen changes,
+   - creates the question loader and worker thread controller when a quiz starts,
+   - routes success and error signals back to the GUI,
+   - overrides the built-in `closeEvent` to handle application closing while questions are loading,
+   - when a worker thread is running, delays closing, requests the thread to stop, and closes the window after thread cleanup is finished.
 
 3. `StartDisplay`
-   - contains the start button and `QuestionParamsWidget`,
+   - contains `StartButtonWidget` and `QuestionParamsWidget`,
    - reads selected quiz parameters from `QuestionParamsWidget`,
-   - emits `start_quiz_requested` with `QuestionParams`.
+   - emits `start_quiz_requested` with `QuestionParams`,
+   - disables `StartButtonWidget` immediately after the start button is clicked to prevent duplicate loading requests,
+   - enables `StartButtonWidget` again when `MainWindow` forwards a loading error through `start_error_returned`,
+   - resets and marks parameter fields in `QuestionParamsWidget` for `NoQuestionsFoundError` and `NotEnoughQuestionsError`.
 
 4. Question loading
    - `MainWindow` receives `QuestionParams`,
    - creates `QuestionLoader`,
-   - starts it in a background `QThread` through `WorkerThreadController`,
-   - shows `LoadingOverlay` while questions are loading.
+   - creates `WorkerThreadController`,
+   - `WorkerThreadController` moves `QuestionLoader` to a background `QThread`,
+   - `WorkerThreadController` starts the thread,
+   - `MainWindow` shows or hides `LoadingOverlay` based on thread start and finish signals.
 
 5. Data fetching and conversion
-   - `QuestionLoader` creates `Questions`,
-   - `Questions` calls `OpenTriviaClient`,
+   - `QuestionLoader` creates `Questions` with the selected parameters,
+   - `QuestionLoader` calls `Questions.load()`,
+   - `Questions.load()` calls `OpenTriviaClient`,
    - `OpenTriviaClient` requests data from the OpenTDB API,
-   - API response data is converted into `Question` objects.
+   - API response data is converted into `Question` objects,
+   - converted questions are stored in `Questions.questions_list`.
 
 6. Question display and scoring
    - `QuestionLoader` emits loaded `Questions`,
-   - `MainWindow` creates `QuestionDisplay`,
+   - `MainWindow` creates `QuestionDisplay` with `questions_list`,
    - `QuestionDisplay` creates one `QuestionWidget` per question,
    - user answers are stored in each `QuestionWidget`,
    - after finishing the quiz, `QuestionDisplay` calculates the score,
-   - `ResultWidget` displays the final result.
+   - `QuestionDisplay` formats each `QuestionWidget` based on the submitted answer,
+   - correctly answered question frames are marked as correct,
+   - incorrectly answered question frames are marked as incorrect,
+   - answer buttons are styled to show which option contained the correct answer,
+   - answer buttons are disabled after the quiz is finished,
+   - `ResultWidget` displays the final result,
+   - the repeat button emits a signal that returns the app to `StartDisplay`.
 
 7. Error handling
-   - loading or API errors are emitted back to `MainWindow`,
+   - API and loading errors are caught by `QuestionLoader`,
+   - `QuestionLoader` emits an error signal back to `MainWindow`,
+   - `WorkerThreadController` can emit `thread_error` if starting the worker thread fails,
    - `MainWindow` shows `ErrorOverlay`,
-   - `StartDisplay` receives the error and marks or resets invalid parameters when possible.
+   - `MainWindow` forwards the error to `StartDisplay`,
+   - for `NoQuestionsFoundError`, `StartDisplay` resets and marks all quiz parameter fields,
+   - for `NotEnoughQuestionsError`, `StartDisplay` resets and marks the amount field,
+   - generic `OpenTriviaClientError` messages are displayed with a retry hint,
+   - unexpected setup errors are logged and shown as a generic user-facing error.

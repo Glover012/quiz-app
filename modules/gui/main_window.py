@@ -117,8 +117,9 @@ class MainWindow(QMainWindow):
             self.thread_controller.thread_finished.connect(self._on_thread_finished)
             # Start thread
             self.thread_controller.run_thread()
-        except Exception as error:
-            self._on_error(error)
+        except Exception:
+            logger.exception("Failed to start question loading.")
+            self._on_error(RuntimeError("Unexpected application error. Please try again."))
 
     @Slot()
     def _show_loading_screen(self) -> None:

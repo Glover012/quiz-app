@@ -52,4 +52,3 @@ class StartDisplay(QWidget):
     @Slot()
     def _start_quiz_requested(self) -> None:
         self.start_quiz_requested.emit(self.question_params.get_params())
-

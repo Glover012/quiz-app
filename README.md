@@ -12,6 +12,7 @@ A simple quiz application built in Python with a PySide6 GUI.
   - [✨ Features](#-features)
   - [🎬 Demo](#-demo)
   - [📘 About the project](#-about-the-project)
+  - [🔄 Application data flow](#-application-data-flow)
   - [🛠️ Technical highlights](#️-technical-highlights)
   - [🧠 What I learned](#-what-i-learned)
   - [📋 Requirements](#-requirements)
@@ -21,7 +22,6 @@ A simple quiz application built in Python with a PySide6 GUI.
       - [💻 Logging level in Windows PowerShell](#-logging-level-in-windows-powershell)
   - [▶️ Running app](#️-running-app)
   - [🗂️ Project structure](#️-project-structure)
-  - [🔄 Application data flow](#-application-data-flow)
   - [📌 Project status](#-project-status)
   - [🚧 Known limitations](#-known-limitations)
   - [🛣 Roadmap](#-roadmap)
@@ -57,6 +57,9 @@ This project was created as a learning exercise and my first complete desktop GU
 It started as a simple console quiz made during a Python course. Later, I expanded it with a graphical interface, API integration, logging, error handling, stylesheets, type hints and a cleaner project structure.
 
 The application allows selecting up to 100 questions, even though the Open Trivia Database API documentation states that up to 50 questions can be requested at once. This is intentional and is used to trigger error handling paths.
+
+## 🔄 Application data flow
+The application data flow and module structure are described in [docs/application-data-flow.md](docs/application-data-flow.md).
 
 ## 🛠️ Technical highlights
 - PySide6 desktop GUI with multiple application screens
@@ -145,16 +148,12 @@ python main.py
     ├── README.md
     └── LICENSE
 
-## 🔄 Application data flow
-The application data flow and module structure are described in [docs/application-data-flow.md](docs/application-data-flow.md).
-
 ## 📌 Project status
 The application is functional. The main planned improvement is adding GUI logic tests.
 
 ## 🚧 Known limitations
 - The application depends on an internet connection
 - GUI behavior is not yet covered by automated tests
-- The Questions model still loads API data during initialization and is planned to be refactored
 - The app was tested manually on Windows
 
 ## 🛣 Roadmap
@@ -168,9 +167,9 @@ The application is functional. The main planned improvement is adding GUI logic 
 - [x] Add file logging
 - [x] Add GitHub Actions test workflow
 - [x] Add Changelog
+- [x] Refactor the Questions model so its constructor does not immediately load questions from the API
 
 ### 📝 Planned
-- [ ] Refactor the Questions model so its constructor does not immediately load questions from the API
 - [ ] Add GUI logic tests
 
 ## 🧪 Tests
