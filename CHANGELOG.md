@@ -12,6 +12,7 @@
 - Updated README project presentation and structure
 - Refactored `Questions` to load question data explicitly with `load()` and updated app flow documentation
 - Simplified model tests now Questions can be initialized normally
+- Improve encapsulation in GUI modules
 
 ## v1.1.0
 

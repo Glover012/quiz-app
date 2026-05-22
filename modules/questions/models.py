@@ -63,18 +63,18 @@ class Questions:
             question_type: OpenTDB question type, or an empty string for any type.
         """
         self.questions_list: list[Question] = []
-        self.amount = amount
-        self.category = category
-        self.difficulty = difficulty
-        self.question_type = question_type
+        self._amount = amount
+        self._category = category
+        self._difficulty = difficulty
+        self._question_type = question_type
 
     def _get_question_data_from_api_client(self) -> OpenTriviaAPIResponseFormat:
         api_client = OpenTriviaClient()
         questions_data = api_client.get_questions_data(
-            self.amount,
-            self.category,
-            self.difficulty,
-            self.question_type,
+            self._amount,
+            self._category,
+            self._difficulty,
+            self._question_type,
             )
         return questions_data
 

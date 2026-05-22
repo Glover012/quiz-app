@@ -168,9 +168,11 @@ The application is functional. The main planned improvement is adding GUI logic 
 - [x] Add GitHub Actions test workflow
 - [x] Add Changelog
 - [x] Refactor the Questions model so its constructor does not immediately load questions from the API
+- [x] Improve encapsulation in GUI modules
 
 ### 📝 Planned
 - [ ] Add GUI logic tests
+- [ ] Consider additional code quality and maintenance improvements
 
 ## 🧪 Tests
 The application includes unit tests for the question models, the OpenTDB API client, and API error handling.

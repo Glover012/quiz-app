@@ -22,33 +22,33 @@ class StartDisplay(QWidget):
         self._add_widgets()
 
     def _setup_layout(self) -> None:
-        self.main_layout = QVBoxLayout()
-        self.setLayout(self.main_layout)
+        self._main_layout = QVBoxLayout()
+        self.setLayout(self._main_layout)
 
     def _setup_widgets(self) -> None:
-        self.app_name = AppNameWidget()
-        self.start_button = StartButtonWidget()
+        self._app_name = AppNameWidget()
+        self._start_button = StartButtonWidget()
         # When start_button_pressed emit signal
-        self.start_button.start_button_pressed.connect(self._start_quiz_requested)
+        self._start_button.start_button_pressed.connect(self._start_quiz_requested)
         # When MainWindow emits error
         self.start_error_returned.connect(self._on_start_error_returned)
-        self.question_params = QuestionParamsWidget()
+        self._question_params = QuestionParamsWidget()
 
     def _on_start_error_returned(self, error: Exception) -> None:
         """Re-enable the start button and mark invalid quiz parameters."""
         logger.debug("Start display handling error: %s", type(error).__name__)
-        self.start_button.on_error_returned()
+        self._start_button.on_error_returned()
         # Color error params for particular error types
         if isinstance(error, NoQuestionsFoundError):
-            self.question_params.on_error_reset_combobox_to_default_values()
+            self._question_params.on_error_reset_combobox_to_default_values()
         elif isinstance(error, NotEnoughQuestionsError):
-            self.question_params.on_error_reset_combobox_to_default_values(QuestionParamsField.AMOUNT)
+            self._question_params.on_error_reset_combobox_to_default_values(QuestionParamsField.AMOUNT)
 
     def _add_widgets(self) -> None:
-        self.main_layout.addWidget(self.app_name, alignment=Qt.AlignmentFlag.AlignCenter)
-        self.main_layout.addWidget(self.start_button, alignment=Qt.AlignmentFlag.AlignCenter)
-        self.main_layout.addWidget(self.question_params, alignment=Qt.AlignmentFlag.AlignCenter)
+        self._main_layout.addWidget(self._app_name, alignment=Qt.AlignmentFlag.AlignCenter)
+        self._main_layout.addWidget(self._start_button, alignment=Qt.AlignmentFlag.AlignCenter)
+        self._main_layout.addWidget(self._question_params, alignment=Qt.AlignmentFlag.AlignCenter)
 
     @Slot()
     def _start_quiz_requested(self) -> None:
-        self.start_quiz_requested.emit(self.question_params.get_params())
+        self.start_quiz_requested.emit(self._question_params.get_params())

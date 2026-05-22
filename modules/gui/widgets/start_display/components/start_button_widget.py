@@ -14,23 +14,23 @@ class StartButtonWidget(QWidget):
         self._setup_button()
 
     def _setup_layout(self) -> None:
-        self.main_layout = QVBoxLayout()
-        self.main_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.setLayout(self.main_layout)
+        self._main_layout = QVBoxLayout()
+        self._main_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.setLayout(self._main_layout)
 
     def _add_start_button(self) -> None:
-        self.start_button = QPushButton('Start')
-        self.main_layout.addWidget(self.start_button)
+        self._start_button = QPushButton('Start')
+        self._main_layout.addWidget(self._start_button)
     
     def _setup_button(self) -> None:
-        self.start_button.setObjectName('startButton')
-        self.start_button.clicked.connect(self._on_start_button_clicked)
+        self._start_button.setObjectName('startButton')
+        self._start_button.clicked.connect(self._on_start_button_clicked)
 
     @Slot()
     def _on_start_button_clicked(self) -> None:
-        self.start_button.setEnabled(False)
+        self._start_button.setEnabled(False)
         self.start_button_pressed.emit()
 
     @Slot()
     def on_error_returned(self) -> None:
-        self.start_button.setEnabled(True)
+        self._start_button.setEnabled(True)

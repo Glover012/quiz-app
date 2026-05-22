@@ -125,11 +125,11 @@ QFrame#resultWidgetFrame {
     padding: 5px;
 }
 
-QRadioButton#questionAnswerRadioButton[containAnswer='correct'] {
+QRadioButton#questionAnswerRadioButton[containCorrectAnswer=True] {
     color: #2ecc71;
 }
 
-QRadioButton#questionAnswerRadioButton[containAnswer='incorrect'] {
+QRadioButton#questionAnswerRadioButton[containCorrectAnswer=False] {
     color: #e74c3c;
 }
 

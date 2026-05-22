@@ -18,27 +18,27 @@ class LoadingOverlay(QWidget):
         self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, False)
 
     def _setup_layout(self) -> None:
-        self.main_layout = QVBoxLayout()
-        self.main_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.setLayout(self.main_layout)
+        self._main_layout = QVBoxLayout()
+        self._main_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.setLayout(self._main_layout)
 
     def _setup_loading_label(self) -> None:
-        self.label = QLabel(
+        self._label = QLabel(
             "Loading questions...",
             alignment=Qt.AlignmentFlag.AlignCenter
             )
-        self.label.setObjectName("loadingOverlayLabel")
+        self._label.setObjectName("loadingOverlayLabel")
 
-        self.main_layout.addWidget(self.label)
+        self._main_layout.addWidget(self._label)
 
     def _setup_progress_bar(self):
-        self.progress_bar = QProgressBar()
-        self.progress_bar.setObjectName("loadingOverlayProgressBar")
-        self.progress_bar.setRange(0, 0)
-        self.progress_bar.setTextVisible(False)
-        self.progress_bar.setFixedWidth(280)
+        self._progress_bar = QProgressBar()
+        self._progress_bar.setObjectName("loadingOverlayProgressBar")
+        self._progress_bar.setRange(0, 0)
+        self._progress_bar.setTextVisible(False)
+        self._progress_bar.setFixedWidth(280)
 
-        self.main_layout.addWidget(self.progress_bar)
+        self._main_layout.addWidget(self._progress_bar)
 
     def show_loading(self):
         self.raise_()
