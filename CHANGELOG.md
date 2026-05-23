@@ -7,12 +7,14 @@
 - README badges and project presentation updates
 - Changelog file
 - Widget screenshots and presentation page
+- Added pytest backend tests and pytest-qt test for Start button
 
 ### Changed
 - Updated README project presentation and structure
 - Refactored `Questions` to load question data explicitly with `load()` and updated app flow documentation
 - Simplified model tests now Questions can be initialized normally
 - Improve encapsulation in GUI modules
+- Updated GitHub Actions workflow to run pytest-based tests
 
 ## v1.1.0
 

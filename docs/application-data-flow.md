@@ -125,14 +125,13 @@ The application data flow is organized around `MainWindow`.
 6. Question display and scoring
    - `QuestionLoader` emits loaded `Questions`,
    - `MainWindow` creates `QuestionDisplay` with `questions_list`,
-   - `QuestionDisplay` creates one `QuestionWidget` per question,
-   - user answers are stored in each `QuestionWidget`,
-   - after finishing the quiz, `QuestionDisplay` calculates the score,
-   - `QuestionDisplay` formats each `QuestionWidget` based on the submitted answer,
-   - correctly answered question frames are marked as correct,
-   - incorrectly answered question frames are marked as incorrect,
-   - answer buttons are styled to show which option contained the correct answer,
-   - answer buttons are disabled after the quiz is finished,
+   - `QuestionDisplay` creates one `QuestionWidget` per question and passes the question number to it,
+   - each `QuestionWidget` owns its question label, answer buttons, selected-answer state and finish styling,
+   - user answers are handled and stored inside each `QuestionWidget`,
+   - after finishing the quiz, `QuestionDisplay` asks each `QuestionWidget` to apply its finish styling,
+   - each `QuestionWidget` marks its frame as correct or incorrect based on the submitted answer,
+   - each `QuestionWidget` styles and disables its answer buttons to show which option contained the correct answer,
+   - `QuestionDisplay` reads public `QuestionWidget` result properties to calculate the final score,
    - `ResultWidget` displays the final result,
    - the repeat button emits a signal that returns the app to `StartDisplay`.
 

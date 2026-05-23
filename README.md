@@ -81,7 +81,9 @@ While building this project, I practiced:
 - Using Qt signals and QThread for background question loading
 - Writing cleaner, PEP 8-friendly Python code
 - Adding type hints and TypedDict definitions for API responses and quiz parameters
+- Creating and using custom data types
 - Writing unit tests with unittest.mock, including mocked HTTP responses and patch decorators
+- Writing backend tests with both unittest and pytest to compare testing styles in a real project
 - Setting up GitHub Actions to run unit tests automatically
 - Documenting application flow and architecture with Markdown and Mermaid
 
@@ -149,11 +151,11 @@ python main.py
     └── LICENSE
 
 ## 📌 Project status
-The application is functional. The main planned improvement is adding GUI logic tests.
+The application is functional. The main planned improvement is expanding GUI logic tests.
 
 ## 🚧 Known limitations
 - The application depends on an internet connection
-- GUI behavior is not yet covered by automated tests
+- GUI behavior is partially covered by automated tests
 - The app was tested manually on Windows
 
 ## 🛣 Roadmap
@@ -169,20 +171,33 @@ The application is functional. The main planned improvement is adding GUI logic 
 - [x] Add Changelog
 - [x] Refactor the Questions model so its constructor does not immediately load questions from the API
 - [x] Improve encapsulation in GUI modules
+- [x] Add pytest backend unit tests 
 
 ### 📝 Planned
-- [ ] Add GUI logic tests
+- [ ] Expand GUI logic tests
 - [ ] Consider additional code quality and maintenance improvements
 
 ## 🧪 Tests
-The application includes unit tests for the question models, the OpenTDB API client, and API error handling.
+This repository contains two backend test suites, kept for educational purposes:
 
-Unit tests are also run automatically with GitHub Actions on pushes to `main` and `dev`, pull requests to `main`, and manual workflow runs.
+- `tests/unittest_backend` contains backend tests written with Python's built-in `unittest`.
+- `tests/pytest_backend` contains the pytest-based version of the same backend tests.
+
+The application uses `pytest` as the main test runner, because the project also includes GUI tests written with `pytest-qt`. The pytest suite covers the OpenTDB API client, question model behavior, API error handling, and selected GUI behavior.
+
+The GUI layer is currently tested with `pytest-qt`. At the moment, the Start button behavior is covered.
+
+Tests are also run automatically with GitHub Actions on pushes to `main` and `dev`, pull requests to `main`, and manual workflow runs.
 
 #### 💻 Running tests in Windows PowerShell
 ```powershell
 cd quiz-app
-python -m unittest discover -s tests
+python -m pytest tests
+```
+
+For unittest use:
+```powershell
+python -m unittest discover tests/unittest_backend
 ```
 
 ## ⚠️ Error triggers

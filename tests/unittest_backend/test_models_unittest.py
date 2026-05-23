@@ -3,7 +3,7 @@ from unittest.mock import patch, MagicMock
 
 import html, re, random
 
-from tests.api_response_test_data import QUESTION_TEST_DATA
+from tests.data.api_response_test_data import QUESTION_TEST_DATA
 from modules.questions.models import Questions, Question
 from modules.questions.opentdb_client import OpenTriviaClientError
 
