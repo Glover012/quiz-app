@@ -38,9 +38,8 @@ class QuestionWidget(QFrame):
         index = ['a', 'b', 'c', 'd']
         self._answer_button_group = QButtonGroup()
         for i, answer in enumerate(self._question.all_answers):
-            button = QRadioButton(
-                f'{f'{index[i]}. ' if self._question.tp == "multiple" else ""}{answer}'
-                )
+            prefix = f"{index[i]}. " if self._question.tp == "multiple" else ""
+            button = QRadioButton(f"{prefix}{answer}")
             button.setObjectName('questionAnswerRadioButton')
             button.setProperty("containCorrectAnswer", None)
             button.setProperty("answer", answer)
