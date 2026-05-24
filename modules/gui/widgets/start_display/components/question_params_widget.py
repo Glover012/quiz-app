@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QWidget, QLabel, QComboBox, QHBoxLayout, QVBoxLayo
 from PySide6.QtCore import Qt, Slot
 
 
-from .....questions import CATEGORIES, DIFFICULTIES, QUESTION_TYPES
+from .....questions import MIN_QUESTION_AMOUNT, MAX_QUESTION_AMOUNT, CATEGORIES, DIFFICULTIES, QUESTION_TYPES
 
 class QuestionParams(TypedDict):
     amount: str
@@ -69,9 +69,7 @@ class QuestionParamsWidget(QWidget):
         self.setLayout(self._main_layout)
 
     def _setup_question_params_comboboxes(self) -> None:
-        min_question_amount = 2
-        max_question_amount = 100
-        question_amount_list = [str(i) for i in range(min_question_amount, max_question_amount + 1)]
+        question_amount_list = [str(i) for i in range(MIN_QUESTION_AMOUNT, MAX_QUESTION_AMOUNT + 1)]
         self._amount_cb = QComboBox()
         self._amount_cb.addItems(question_amount_list)
 

@@ -1,5 +1,8 @@
 """OpenTDB parameter values used by the quiz setup UI."""
 
+MIN_QUESTION_AMOUNT: int = 2
+MAX_QUESTION_AMOUNT: int = 100 # API can handle <= 50, 100 is for testing error routes
+
 CATEGORIES: dict[str, str] = {
     "Any Category": "",
     "General Knowledge": "9",
