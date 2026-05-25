@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QWidget, QLabel, QComboBox, QHBoxLayout, QVBoxLayo
 from PySide6.QtCore import Qt, Slot
 
 
-from .....questions import MIN_QUESTION_AMOUNT, MAX_QUESTION_AMOUNT, CATEGORIES, DIFFICULTIES, QUESTION_TYPES
+from .....questions import QUESTION_AMOUNT, CATEGORIES, DIFFICULTIES, QUESTION_TYPES
 
 class QuestionParams(TypedDict):
     amount: str
@@ -69,9 +69,12 @@ class QuestionParamsWidget(QWidget):
         self.setLayout(self._main_layout)
 
     def _setup_question_params_comboboxes(self) -> None:
-        question_amount_list = [str(i) for i in range(MIN_QUESTION_AMOUNT, MAX_QUESTION_AMOUNT + 1)]
+        # Gen question amount combobox data based on QUESTION_AMOUNT in API params
+        # Did not used addItems with a list, in order to achive consecutive use of 
+        # currentData for all comboboxes, to simplify tests and readability
         self._amount_cb = QComboBox()
-        self._amount_cb.addItems(question_amount_list)
+        for amount, amount_id in {str(i): str(i) for i in range(1, QUESTION_AMOUNT + 1)}.items():
+            self._amount_cb.addItem(amount, amount_id)
 
         # Add values to comboboxes from static variables in API params
         self._category_cb = QComboBox()
@@ -111,7 +114,7 @@ class QuestionParamsWidget(QWidget):
         """Return selected question params in comboboxes."""
         self._reset_error_frames() # Reset frame colors before another load attempt.
         params: QuestionParams = {
-            "amount": str(self._amount_cb.currentText()),
+            "amount": str(self._amount_cb.currentData()),
             "difficulty": str(self._difficulty_cb.currentData()),
             "category": str(self._category_cb.currentData()),
             "question_type": str(self._type_cb.currentData()),
