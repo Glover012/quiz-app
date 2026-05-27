@@ -17,7 +17,7 @@ def test_start_button_click_disables_button_and_emits_signal(qtbot: QtBot, start
     assert button is not None
 
     with qtbot.waitSignal(start_button.start_button_pressed, timeout=100):
-        qtbot.mouseClick(button, Qt.MouseButton.LeftButton)
+        button.click()
 
     assert button.isEnabled() is False
 
@@ -27,7 +27,7 @@ def test_start_button_reenable_on_error(qtbot: QtBot, start_button: StartButtonW
     button = start_button.findChild(QPushButton, "startButton")
     assert button is not None
 
-    qtbot.mouseClick(button, Qt.MouseButton.LeftButton)
+    button.click()
     assert button.isEnabled() is False
 
     start_button.on_error_returned()

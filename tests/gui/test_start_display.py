@@ -30,7 +30,7 @@ def test_start_button_pressed(
     start_display_start_quiz_requested_method = mocker.spy(start_display, "_start_quiz_requested")
 
     with qtbot.waitSignal(start_display._start_button.start_button_pressed, timeout=100):
-        qtbot.mouseClick(button, Qt.MouseButton.LeftButton)
+        button.click()
         start_display_start_quiz_requested_method.assert_called_once()
 
 def test_start_quiz_requested(
@@ -49,7 +49,7 @@ def test_start_quiz_requested(
     assert button is not None
 
     with qtbot.waitSignal(start_display.start_quiz_requested, timeout=100) as signal_blocker:
-        qtbot.mouseClick(button, Qt.MouseButton.LeftButton)
+        button.click()
 
     expected_params = start_display._question_params.get_params()
     # Checks that question params has been returned

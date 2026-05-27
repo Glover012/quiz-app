@@ -4,8 +4,6 @@ import pytest
 from pytest_mock import MockerFixture
 from pytestqt.qtbot import QtBot
 
-from PySide6.QtCore import Qt
-
 from modules.questions.models import Questions
 from tests.data.api_response_test_data import QUESTION_TEST_DATA
 from modules.gui.widgets.question_display.components import QuestionWidget
@@ -119,7 +117,7 @@ def test_on_answer_button_clicked(qtbot: QtBot, mocker: MockerFixture, question_
             button_answer = button.property("answer")
             expected = button_answer == correct_answer
 
-            qtbot.mouseClick(button, Qt.MouseButton.LeftButton)
+            button.click()
             button_clicked_method.assert_called_once_with(button)
 
             assert question_widget._correct_answer is expected
@@ -136,7 +134,7 @@ def test_color_widget_frame_on_finish_correct(qtbot: QtBot, question_widget: Que
         button_answer = button.property("answer")
         correct_answer = question_widget._question.correct_answer
         if button_answer == correct_answer:
-            qtbot.mouseClick(button, Qt.MouseButton.LeftButton)
+            button.click()
             break
 
     question_widget._color_widget_frame_on_finish()
@@ -162,7 +160,7 @@ def test_color_widget_frame_on_finish_incorrect(qtbot: QtBot, question_widget: Q
         button_answer = button.property("answer")
         correct_answer = question_widget._question.correct_answer
         if button_answer != correct_answer:
-            qtbot.mouseClick(button, Qt.MouseButton.LeftButton)
+            button.click()
             break
 
     question_widget._color_widget_frame_on_finish()
@@ -182,7 +180,7 @@ def test_format_buttons_on_finish(qtbot: QtBot, question_widget_list: list[Quest
 
         button_group = question_widget._answer_button_group.buttons()
         first_button = button_group[0]
-        qtbot.mouseClick(first_button, Qt.MouseButton.LeftButton)
+        first_button.click()
         question_widget._format_buttons_on_finish()
 
         for button in button_group:
