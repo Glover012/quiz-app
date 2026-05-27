@@ -76,9 +76,9 @@ class QuestionWidget(QFrame):
         for button in self._answer_button_group.buttons():
             button.setEnabled(False)
             if self._question.correct_answer == str(button.property("answer")):
-                button.setProperty("containCorrectAnswer", True)
+                button.setProperty("containCorrectAnswer", "true")
             else:
-                button.setProperty("containCorrectAnswer", False)
+                button.setProperty("containCorrectAnswer", "false")
             button.style().polish(button)
 
     @Slot()

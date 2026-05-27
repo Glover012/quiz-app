@@ -107,10 +107,10 @@ QFrame#questionWidgetFrame {
     padding: 5px;
 }
 
-QFrame#questionWidgetFrame[answerState='correct'] {
+QFrame#questionWidgetFrame[answerState="correct"] {
     border: 2px solid #2ecc71;
 }
-QFrame#questionWidgetFrame[answerState='incorrect'] {
+QFrame#questionWidgetFrame[answerState="incorrect"] {
     border: 2px solid #e74c3c;
 }
 
@@ -125,11 +125,11 @@ QFrame#resultWidgetFrame {
     padding: 5px;
 }
 
-QRadioButton#questionAnswerRadioButton[containCorrectAnswer=True] {
+QRadioButton#questionAnswerRadioButton[containCorrectAnswer="true"] {
     color: #2ecc71;
 }
 
-QRadioButton#questionAnswerRadioButton[containCorrectAnswer=False] {
+QRadioButton#questionAnswerRadioButton[containCorrectAnswer="false"] {
     color: #e74c3c;
 }
 
