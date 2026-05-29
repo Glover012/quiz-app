@@ -172,8 +172,11 @@ class MainWindow(QMainWindow):
         Used when displaying new widgets. Due to QStackedLayout.StackingMode.StackAll
         some, previously hidden, widgets may be visible again.
         """
-        self._loading_overlay.hide_loading()
-        self._error_overlay.hide()
+        for overlay in self._ignored:
+            if isinstance(overlay, LoadingOverlay):
+                overlay.hide_loading()
+            else:
+                overlay.hide()
 
     def _display_widget(self, widget: QWidget | QFrame) -> None:
         """Display external Widget in MainWindow."""
