@@ -3,12 +3,14 @@ from pytest_mock import MockerFixture
 from pytestqt.qtbot import QtBot
 
 from PySide6.QtWidgets import QMainWindow
+from PySide6.QtGui import QCloseEvent
 
 from modules.gui import MainWindow
 from modules.gui.menu_bar import MenuActions
 from modules.gui.widgets.overlays import ErrorOverlay
-from modules.gui.widgets.start_display import StartDisplay
-from modules.questions.models import Questions
+from modules.gui.widgets.start_display import StartDisplay, QuestionParams
+from modules.gui.workers.worker_thread_controller import WorkerThreadControllerError
+from modules.questions import Questions, OpenTriviaClientError
 from tests.data.api_response_test_data import QUESTION_TEST_DATA
 
 @pytest.fixture
@@ -44,6 +46,16 @@ def questions(mocker: MockerFixture) -> Questions:
     mocker.patch.object(questions, "_get_question_data_from_api_client", return_value=QUESTION_TEST_DATA )
     questions.load()
     return questions
+
+@pytest.fixture
+def question_params() -> QuestionParams:
+    question_params: QuestionParams = {
+            "amount": "10",
+            "difficulty": "",
+            "category": "",
+            "question_type": "",
+        }
+    return question_params
 
 def test_handle_menu_actions(
         qtbot: QtBot, 
@@ -138,6 +150,119 @@ def test_on_error_close_requested(
     with qtbot.assertNotEmitted(main_window._start_display.start_error_returned):
         main_window._on_error(error)
         show_error.assert_not_called()
+
+def test_load_questions(
+        qtbot: QtBot,
+        mocker: MockerFixture,
+        main_window: MainWindow,
+        question_params: QuestionParams,
+        ) -> None:
+    """
+    Test _load_questions slot method init:
+    - init QuesitionLoader with question_params
+    - init ThreadController with QuesitionLoader
+    - calls run thread on ThreadController
+    """
+    qtbot.addWidget(main_window)
+
+    connect_signals = mocker.patch.object(
+        main_window,
+        "_connect_question_loading_signals",
+    )
+
+    question_loader_mock = mocker.Mock()
+    thread_controller_mock = mocker.Mock()
+
+    question_loader_cls = mocker.patch(
+        "modules.gui.main_window.QuestionLoader",
+        return_value=question_loader_mock,
+    )
+    thread_controller_cls = mocker.patch(
+        "modules.gui.main_window.WorkerThreadController",
+        return_value=thread_controller_mock,
+    )
+
+    main_window._load_questions(question_params)
+    assert main_window._question_loader is question_loader_mock
+    assert main_window._thread_controller is thread_controller_mock
+
+    question_loader_cls.assert_called_once_with(question_params)
+    thread_controller_cls.assert_called_once_with(question_loader_mock)
+
+    connect_signals.assert_called_once_with()
+    thread_controller_mock.setup.assert_called_once_with()
+    thread_controller_mock.run_thread.assert_called_once_with()
+
+def test_connect_question_loading_signals(
+        qtbot: QtBot,
+        mocker: MockerFixture,
+        main_window: MainWindow,
+        question_params: QuestionParams,
+        questions: Questions,
+        ) -> None:
+    """
+    Test _connect_question_loading_signals method and 
+    question signals behavior:
+    - QuestionLoader signals:
+        error, loaded
+    - ThreadController signals:
+        thread_error, thread_started,
+        thread_finished
+    """
+    qtbot.addWidget(main_window)
+
+    # Autospec=True makes the mock behave as a instance method
+    run_thread = mocker.patch(
+    "modules.gui.main_window.WorkerThreadController.run_thread",
+    autospec=True,
+    )
+
+    # Unused mock, but required.
+    # Patch setup method to avoid QuestionLoader moveToThread for signal tests.
+    # If not mocked, question loader signal tests aren't going to pass.
+    # Signals may not be delivered because there is no running event loop
+    # in the QThread to which QuestionLoader is moved.
+    # And there is no event loop for QThread, becasuse this thread won't be started
+    # beacause of mocked run_thread function.
+    setup_thread = mocker.patch(
+    "modules.gui.main_window.WorkerThreadController.setup",
+    autospec=True,
+    )
+
+    # Methods
+    on_error = mocker.patch.object(main_window, "_on_error")
+    on_questions_loaded = mocker.patch.object(main_window, "_on_questions_loaded")
+    show_loading_screen = mocker.patch.object(main_window, "_show_loading_screen")
+    hide_loading_screen = mocker.patch.object(main_window, "_hide_loading_screen")
+    on_thread_finished = mocker.patch.object(main_window, "_on_thread_finished")
+
+    main_window._load_questions(question_params)
+
+    assert main_window._question_loader is not None
+    assert main_window._thread_controller is not None
+    run_thread.assert_called_once_with(main_window._thread_controller)
+
+    loader_error = OpenTriviaClientError("test")
+    thread_error = WorkerThreadControllerError("test")
+
+    # Question loader
+    main_window._question_loader.error.emit(loader_error)
+    on_error.assert_called_once_with(loader_error)
+
+    main_window._question_loader.loaded.emit(questions)
+    on_questions_loaded.assert_called_once_with(questions)
+
+    # Thread controller
+    on_error.reset_mock()
+    main_window._thread_controller.thread_error.emit(thread_error)
+    on_error.assert_called_once_with(thread_error)
+
+    main_window._thread_controller.thread_started.emit()
+    show_loading_screen.assert_called_once_with()
+
+    main_window._thread_controller.thread_finished.emit()
+    hide_loading_screen.assert_called_once_with()
+    on_thread_finished.assert_called_once_with()
 
 def test_show_loading_screen(
         qtbot: QtBot, 
@@ -356,3 +481,60 @@ def test_display_widget(
     set_current_widget.assert_called_once_with(mock_widget)
 
     hide_overlays.assert_called_once_with()
+
+def test_close_event_running_thread(
+        qtbot: QtBot,
+        mocker: MockerFixture,
+        main_window: MainWindow,
+        ) -> None:
+    """
+    Test closeEvent method when thread is running:
+    - check _close_requested is True
+    - calls thread controller stop method
+    - ignore close event
+    - close_event.isAccepted() is False
+    """
+    qtbot.addWidget(main_window)
+
+    thread_controller_mock = mocker.Mock()
+    thread_controller_mock.is_running = True
+    main_window._thread_controller = thread_controller_mock
+    
+    close_event = QCloseEvent()
+    close_ignore = mocker.spy(close_event, "ignore")
+
+    main_window.closeEvent(close_event)
+
+    assert main_window._close_requested is True
+    thread_controller_mock.stop.assert_called_once_with()
+    close_ignore.assert_called_once_with()
+    assert close_event.isAccepted() is False
+
+def test_close_event_without_running_thread(
+        qtbot: QtBot,
+        mocker: MockerFixture,
+        main_window: MainWindow,
+        ) -> None:
+    """
+    Test closeEvent method when thread is not running:
+    - _close_requested is False
+    (flag is only set True when thread is running)
+    - not called thread controller stop method
+    - ignore not called
+    - close_event.isAccepted() is True
+    """
+    qtbot.addWidget(main_window)
+
+    thread_controller_mock = mocker.Mock()
+    thread_controller_mock.is_running = False
+    main_window._thread_controller = thread_controller_mock
+
+    close_event = QCloseEvent()
+    close_ignore = mocker.spy(close_event, "ignore")
+
+    main_window.closeEvent(close_event)
+
+    assert main_window._close_requested is False
+    thread_controller_mock.stop.assert_not_called()
+    close_ignore.assert_not_called()
+    assert close_event.isAccepted() is True

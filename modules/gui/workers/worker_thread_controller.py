@@ -32,10 +32,9 @@ class WorkerThreadController(QObject):
     def __init__(self, worker: QuestionLoader) -> None:
         super().__init__()
         self._running = False
+        self._is_setup = False
         self._worker = worker
         self._worker_thread = QThread()
-        self._setup_worker_thread()
-        self._connect_signals()
 
     def _setup_worker_thread(self) -> None:
         """Setup thread and worker."""
@@ -53,6 +52,14 @@ class WorkerThreadController(QObject):
         self._worker_thread.finished.connect(self.thread_finished.emit)
         self._worker_thread.finished.connect(self._worker_thread.deleteLater)
 
+    def setup(self):
+        """Setup thread and worker. Connects signals."""
+        if self._is_setup:
+            return
+        self._setup_worker_thread()
+        self._connect_signals()
+        self._is_setup = True
+
     def _on_thread_started(self) -> None:
         logger.debug("Worker thread started for %s.", type(self._worker).__name__)
         self._running = True
@@ -63,11 +70,14 @@ class WorkerThreadController(QObject):
 
     def run_thread(self) -> None:
         try:
+            if self._is_setup is False:
+                self.setup()
             self._worker_thread.start()
         except Exception as error:
             logger.exception("Failed to start worker thread.")
             self.thread_error.emit(WorkerThreadControllerError(str(error)))
 
+    @property
     def is_running(self) -> bool:
         return self._running
     

@@ -50,8 +50,8 @@ class MainWindow(QMainWindow):
         # Used for overlays
         self._ignored = []
         self._close_requested = False
-        self._thread_controller = None
-        self._question_loader = None
+        self._question_loader: QuestionLoader | None = None
+        self._thread_controller: WorkerThreadController | None = None
 
     def _setup_menu_bar(self) -> None:
         self._menu_bar = MenuBar()
@@ -102,24 +102,31 @@ class MainWindow(QMainWindow):
     def _load_questions(self, question_params: QuestionParams) -> None:
         """Start a background worker that loads quiz questions. Use WorkerThreadController."""
         logger.info("Question loading requested with params: %s", question_params)
-        # Connect worker signals before starting the thread
         try:
-            # Connect worker error signal
             self._question_loader = QuestionLoader(question_params)
-            self._question_loader.error.connect(self._on_error)
-            self._question_loader.loaded.connect(self._on_questions_loaded)
             self._thread_controller = WorkerThreadController(self._question_loader)
-            # Connect thread controller error signal
-            self._thread_controller.thread_error.connect(self._on_error)
-            # Connect loading screen signals
-            self._thread_controller.thread_started.connect(self._show_loading_screen)
-            self._thread_controller.thread_finished.connect(self._hide_loading_screen)
-            self._thread_controller.thread_finished.connect(self._on_thread_finished)
-            # Start thread
+
+            self._connect_question_loading_signals()
+            self._thread_controller.setup()
             self._thread_controller.run_thread()
         except Exception:
             logger.exception("Failed to start question loading.")
             self._on_error(RuntimeError("Unexpected application error. Please try again."))
+
+    def _connect_question_loading_signals(self):
+        """Connects signals for question loader and thread controller."""
+        if self._question_loader is None or self._thread_controller is None:
+            raise RuntimeError("Question loading objects are not initialized.")
+
+        # Connect question loader signals
+        self._question_loader.error.connect(self._on_error)
+        self._question_loader.loaded.connect(self._on_questions_loaded)
+
+        # Connect thread controller signals
+        self._thread_controller.thread_error.connect(self._on_error)
+        self._thread_controller.thread_started.connect(self._show_loading_screen)
+        self._thread_controller.thread_finished.connect(self._hide_loading_screen)
+        self._thread_controller.thread_finished.connect(self._on_thread_finished)
 
     @Slot()
     def _show_loading_screen(self) -> None:
@@ -209,7 +216,7 @@ class MainWindow(QMainWindow):
         When the thread emits finished, _on_thread_finished calls close() again.
         The second close request is accepted because the thread is no longer running.
         """
-        if self._thread_controller is not None and self._thread_controller.is_running():
+        if self._thread_controller is not None and self._thread_controller.is_running:
             logger.info("Close requested while question loader is running. Waiting for thread cleanup.")
             self._close_requested = True
             self._thread_controller.stop()
