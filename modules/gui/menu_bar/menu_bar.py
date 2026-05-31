@@ -15,11 +15,11 @@ class MenuBar(QMenuBar):
         self._add_help_menu()
 
     def _add_quiz_menu(self) -> None:
-        self.quiz_menu = QuizMenu()
-        self.quiz_menu.action_requested.connect(self.action_requested.emit)
-        self.addMenu(self.quiz_menu)
+        self._quiz_menu = QuizMenu()
+        self._quiz_menu.action_requested.connect(self.action_requested.emit)
+        self.addMenu(self._quiz_menu)
 
     def _add_help_menu(self) -> None:
-        self.help_menu = HelpMenu()
-        self.help_menu.action_requested.connect(self.action_requested.emit)
-        self.addMenu(self.help_menu)
+        self._help_menu = HelpMenu()
+        self._help_menu.action_requested.connect(self.action_requested.emit)
+        self.addMenu(self._help_menu)

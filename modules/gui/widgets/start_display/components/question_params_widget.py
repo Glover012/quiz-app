@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QWidget, QLabel, QComboBox, QHBoxLayout, QVBoxLayo
 from PySide6.QtCore import Qt, Slot
 
 
-from .....questions import CATEGORIES, DIFFICULTIES, QUESTION_TYPES
+from .....questions import QUESTION_AMOUNT, CATEGORIES, DIFFICULTIES, QUESTION_TYPES
 
 class QuestionParams(TypedDict):
     amount: str
@@ -28,26 +28,26 @@ class ParamFrame(QFrame):
     """Frame that groups a parameter label with its combo box."""
     def __init__(self, label_text: str) -> None:
         super().__init__()
-        self.label_text = label_text
+        self._label_text = label_text
         self.setObjectName("paramFrame")
         self.setProperty("paramState", None)
         self._setup_layout()
         self._add_label()
 
     def _setup_layout(self) -> None:
-        self.main_layout = QVBoxLayout()
-        self.main_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.setLayout(self.main_layout)
+        self._main_layout = QVBoxLayout()
+        self._main_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.setLayout(self._main_layout)
 
     def _add_label(self) -> None:
-        param_label = QLabel(self.label_text)
-        self.main_layout.addWidget(
+        param_label = QLabel(self._label_text)
+        self._main_layout.addWidget(
             param_label,
             alignment=Qt.AlignmentFlag.AlignBottom,
             )
 
     def add_combobox(self, combobox: QComboBox) -> None:
-        self.main_layout.addWidget(
+        self._main_layout.addWidget(
             combobox,
             alignment=Qt.AlignmentFlag.AlignTop,
             )
@@ -58,65 +58,66 @@ class QuestionParamsWidget(QWidget):
 
     def __init__(self) -> None:
         super().__init__()
-        self.frame_list: list[ParamFrame] = []
+        self._frame_list: list[ParamFrame] = []
         self._setup_layout()
         self._setup_question_params_comboboxes()
         self._add_question_param_frames()
 
     def _setup_layout(self) -> None:
-        self.main_layout = QHBoxLayout()
-        self.main_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.setLayout(self.main_layout)
+        self._main_layout = QHBoxLayout()
+        self._main_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.setLayout(self._main_layout)
 
     def _setup_question_params_comboboxes(self) -> None:
-        min_question_amount = 2
-        max_question_amount = 100
-        question_amount_list = [str(i) for i in range(min_question_amount, max_question_amount + 1)]
-        self.amount_cb = QComboBox()
-        self.amount_cb.addItems(question_amount_list)
+        # Gen question amount combobox data based on QUESTION_AMOUNT in API params
+        # Did not used addItems with a list, in order to achive consecutive use of 
+        # currentData for all comboboxes, to simplify tests and readability
+        self._amount_cb = QComboBox()
+        for amount, amount_id in {str(i): str(i) for i in range(1, QUESTION_AMOUNT + 1)}.items():
+            self._amount_cb.addItem(amount, amount_id)
 
         # Add values to comboboxes from static variables in API params
-        self.category_cb = QComboBox()
+        self._category_cb = QComboBox()
         for category, category_id in CATEGORIES.items():
-            self.category_cb.addItem(category, category_id)
+            self._category_cb.addItem(category, category_id)
 
-        self.difficulty_cb = QComboBox()
+        self._difficulty_cb = QComboBox()
         for difficulty, difficulty_id in DIFFICULTIES.items():
-            self.difficulty_cb.addItem(difficulty, difficulty_id)
+            self._difficulty_cb.addItem(difficulty, difficulty_id)
 
-        self.type_cb = QComboBox()
+        self._type_cb = QComboBox()
         for question_type, question_type_id in QUESTION_TYPES.items():
-            self.type_cb.addItem(question_type, question_type_id)
+            self._type_cb.addItem(question_type, question_type_id)
 
     def _add_question_param_frames(self) -> None:
-        self.amount_frame = ParamFrame("Amount")
-        self.frame_list.append(self.amount_frame)
-        self.amount_frame.add_combobox(self.amount_cb)
-        self.main_layout.addWidget(self.amount_frame)
+        self._amount_frame = ParamFrame("Amount")
+        self._frame_list.append(self._amount_frame)
+        self._amount_frame.add_combobox(self._amount_cb)
+        self._main_layout.addWidget(self._amount_frame)
 
-        self.difficulty_frame = ParamFrame("Difficulty")
-        self.frame_list.append(self.difficulty_frame)
-        self.difficulty_frame.add_combobox(self.difficulty_cb)
-        self.main_layout.addWidget(self.difficulty_frame)
+        self._difficulty_frame = ParamFrame("Difficulty")
+        self._frame_list.append(self._difficulty_frame)
+        self._difficulty_frame.add_combobox(self._difficulty_cb)
+        self._main_layout.addWidget(self._difficulty_frame)
 
-        self.category_frame = ParamFrame("Category")
-        self.frame_list.append(self.category_frame)
-        self.category_frame.add_combobox(self.category_cb)
-        self.main_layout.addWidget(self.category_frame)
+        self._category_frame = ParamFrame("Category")
+        self._frame_list.append(self._category_frame)
+        self._category_frame.add_combobox(self._category_cb)
+        self._main_layout.addWidget(self._category_frame)
 
-        self.type_frame = ParamFrame("Type")
-        self.frame_list.append(self.type_frame)
-        self.type_frame.add_combobox(self.type_cb)
-        self.main_layout.addWidget(self.type_frame)
+        self._type_frame = ParamFrame("Type")
+        self._frame_list.append(self._type_frame)
+        self._type_frame.add_combobox(self._type_cb)
+        self._main_layout.addWidget(self._type_frame)
 
     def get_params(self) -> QuestionParams:
         """Return selected question params in comboboxes."""
         self._reset_error_frames() # Reset frame colors before another load attempt.
         params: QuestionParams = {
-            "amount": str(self.amount_cb.currentText()),
-            "difficulty": str(self.difficulty_cb.currentData()),
-            "category": str(self.category_cb.currentData()),
-            "question_type": str(self.type_cb.currentData()),
+            "amount": str(self._amount_cb.currentData()),
+            "difficulty": str(self._difficulty_cb.currentData()),
+            "category": str(self._category_cb.currentData()),
+            "question_type": str(self._type_cb.currentData()),
         }
         return params
 
@@ -135,17 +136,17 @@ class QuestionParamsWidget(QWidget):
         for field in fields_to_reset:
             match field:
                 case QuestionParamsField.AMOUNT:
-                    self.amount_cb.setCurrentIndex(0)
-                    self._color_error_param_frame(self.amount_frame)
+                    self._amount_cb.setCurrentIndex(0)
+                    self._color_error_param_frame(self._amount_frame)
                 case QuestionParamsField.DIFFICULTY:
-                    self.difficulty_cb.setCurrentIndex(0)
-                    self._color_error_param_frame(self.difficulty_frame)
+                    self._difficulty_cb.setCurrentIndex(0)
+                    self._color_error_param_frame(self._difficulty_frame)
                 case QuestionParamsField.CATEGORY:
-                    self.category_cb.setCurrentIndex(0)
-                    self._color_error_param_frame(self.category_frame)
+                    self._category_cb.setCurrentIndex(0)
+                    self._color_error_param_frame(self._category_frame)
                 case QuestionParamsField.QUESTION_TYPE:
-                    self.type_cb.setCurrentIndex(0)
-                    self._color_error_param_frame(self.type_frame)
+                    self._type_cb.setCurrentIndex(0)
+                    self._color_error_param_frame(self._type_frame)
 
     def _color_error_param_frame(self, frame: QFrame) -> None:
         """Mark a parameter frame as invalid."""
@@ -155,7 +156,7 @@ class QuestionParamsWidget(QWidget):
         frame.update()
 
     def _reset_error_frames(self) -> None:
-        for frame in self.frame_list:
+        for frame in self._frame_list:
             frame.setProperty("paramState", None)
             frame.style().unpolish(frame)
             frame.style().polish(frame)

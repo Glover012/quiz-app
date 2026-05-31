@@ -3,7 +3,7 @@ import logging
 from PySide6.QtCore import QObject, Signal, Slot
 
 from ..widgets import QuestionParams
-from ...questions.models import Questions
+from ...questions import Questions, OpenTriviaClientError
 
 logger = logging.getLogger(__name__)
 
@@ -17,10 +17,10 @@ class QuestionLoader(QObject):
 
     def __init__(self, params: QuestionParams) -> None:
         super().__init__()
-        self.amount = params["amount"]
-        self.category = params["category"]
-        self.difficulty = params["difficulty"]
-        self.question_type = params["question_type"]
+        self._amount = params["amount"]
+        self._category = params["category"]
+        self._difficulty = params["difficulty"]
+        self._question_type = params["question_type"]
 
     @Slot()
     def run(self) -> None:
@@ -35,20 +35,27 @@ class QuestionLoader(QObject):
         try:
             logger.info(
                 "QuestionLoader started: amount=%s, category=%s, difficulty=%s, type=%s",
-                self.amount,
-                self.category or "any",
-                self.difficulty or "any",
-                self.question_type or "any",
+                self._amount,
+                self._category or "any",
+                self._difficulty or "any",
+                self._question_type or "any",
                 )
             questions = self._load_questions()
             logger.info("QuestionLoader loaded %s questions.", len(questions.questions_list))
             self.loaded.emit(questions)
-        except Exception as error:
-            logger.exception("Question loading failed.")
+
+        except OpenTriviaClientError as error:
+            logger.warning("Question loading failed: %s: %s", type(error).__name__, error, exc_info=True)
             self.error.emit(error)
+
+        except Exception as error:
+            logger.exception("Unexpected question loading error.")
+            self.error.emit(error)
+
         finally:
             self.finished.emit()
 
     def _load_questions(self) -> Questions:
-        questions = Questions(self.amount, self.category, self.difficulty, self.question_type)
+        questions = Questions(self._amount, self._category, self._difficulty, self._question_type)
+        questions.load()
         return questions

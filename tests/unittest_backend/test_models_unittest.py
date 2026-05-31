@@ -3,7 +3,7 @@ from unittest.mock import patch, MagicMock
 
 import html, re, random
 
-from tests.api_response_test_data import QUESTION_TEST_DATA
+from tests.data.api_response_test_data import QUESTION_TEST_DATA
 from modules.questions.models import Questions, Question
 from modules.questions.opentdb_client import OpenTriviaClientError
 
@@ -15,13 +15,7 @@ class TestQuestionsModels(unittest.TestCase):
         Prepare a Questions instance for testing its methods.
         Analyze QUESTION_TEST_DATA for test operations.
         """
-        # Use __new__ so the constructor and its internal methods are not called.
-        self.questions = Questions.__new__(Questions)
-        self.questions.amount = 10
-        self.questions.category = ""
-        self.questions.difficulty = ""
-        self.questions.question_type = ""
-        self.questions.questions_list = []
+        self.questions = Questions(10, "", "", "")
 
         # Count question types in QUESTION_TEST_DATA.
         self.question_amount = len(QUESTION_TEST_DATA["results"])

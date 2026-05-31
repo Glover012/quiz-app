@@ -15,16 +15,16 @@ class ResultWidget(QFrame):
         super().__init__()
         self.setObjectName('resultWidgetFrame')
         self._setup_layout()
-        self.question_amount = question_amount
-        self.total_question_points = total_question_points
-        self.user_points = user_points
-        self.user_good_answers = user_good_answers
+        self._question_amount = question_amount
+        self._total_question_points = total_question_points
+        self._user_points = user_points
+        self._user_good_answers = user_good_answers
         self._display_results()
 
     def _setup_layout(self) -> None:
-        self.main_layout = QVBoxLayout()
-        self.main_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.setLayout(self.main_layout)
+        self._main_layout = QVBoxLayout()
+        self._main_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.setLayout(self._main_layout)
     
     def _display_results(self) -> None:
         """Display quiz results."""
@@ -32,18 +32,18 @@ class ResultWidget(QFrame):
         quiz_result_label.setObjectName('quizResultLabel')
 
         user_good_answers_label = QLabel(
-            f'Good answers - {self.user_good_answers}/{self.question_amount}',
+            f'Good answers - {self._user_good_answers}/{self._question_amount}',
             alignment=Qt.AlignmentFlag.AlignCenter
             )
         user_good_answers_label.setObjectName('userGoodAnswersLabel')
         
         score = (
-            f'Score - {self.user_points}/{self.total_question_points} points. '
-            f'{(self.user_points/float(self.total_question_points*0.01)):.2f}%'
+            f'Score - {self._user_points}/{self._total_question_points} points. '
+            f'{(self._user_points/float(self._total_question_points*0.01)):.2f}%'
             )
         quiz_score_label = QLabel(score, alignment=Qt.AlignmentFlag.AlignCenter)
         quiz_score_label.setObjectName('quizScoreLabel')
 
-        self.main_layout.addWidget(quiz_result_label)
-        self.main_layout.addWidget(quiz_score_label)
-        self.main_layout.addWidget(user_good_answers_label)
+        self._main_layout.addWidget(quiz_result_label)
+        self._main_layout.addWidget(quiz_score_label)
+        self._main_layout.addWidget(user_good_answers_label)

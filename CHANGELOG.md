@@ -4,12 +4,21 @@
 
 ### Added
 - GitHub Actions workflow for running unit tests
-- README badges and project presentation updates
+- README badge and project presentation updates
 - Changelog file
 - Widget screenshots and presentation page
+- Pytest backend tests for question models and the OpenTDB client
+- Pytest-qt GUI tests for core widgets, signal wiring, loading states, error handling, quiz flow and MainWindow coordination
+- Pytest configuration for the main backend and GUI test suites
+- Pytest, pytest-mock and pytest-qt test dependencies
 
 ### Changed
 - Updated README project presentation and structure
+- Refactored `Questions` to load question data explicitly with `load()` and updated app flow documentation
+- Simplified model tests now Questions can be initialized normally
+- Improved encapsulation in GUI modules
+- Updated GitHub Actions workflow to run pytest-based tests
+- Reorganized test files into backend, GUI and shared static API response data directories
 
 ## v1.1.0
 
