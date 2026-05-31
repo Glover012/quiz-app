@@ -1,7 +1,12 @@
 # 🎯 Quiz App
 ![Python](https://img.shields.io/badge/Python-3.11%2B-blue)
+![Status](https://img.shields.io/badge/Status-Stable-brightgreen)
+![Platform](https://img.shields.io/badge/Platform-Windows-blue)
 ![PySide6](https://img.shields.io/badge/GUI-PySide6-green)
+![Test Coverage](https://img.shields.io/badge/Test%20Coverage-80%25-yellowgreen)
 ![Tests](https://github.com/Glover012/quiz-app/actions/workflows/tests.yml/badge.svg?branch=main)
+![Commits](https://img.shields.io/github/commit-activity/t/Glover012/quiz-app?label=Commits)
+![Pull Requests](https://img.shields.io/github/issues-search/Glover012/quiz-app?query=is%3Apr&label=Pull%20Requests)
 ![License](https://img.shields.io/github/license/Glover012/quiz-app)
 
 A simple quiz application built in Python with a PySide6 GUI.
@@ -28,7 +33,8 @@ A simple quiz application built in Python with a PySide6 GUI.
     - [✅ Completed](#-completed)
     - [📝 Planned](#-planned)
   - [🧪 Tests](#-tests)
-      - [💻 Running tests in Windows PowerShell](#-running-tests-in-windows-powershell)
+      - [🤖 CI](#-ci)
+        - [💻 Running tests in Windows PowerShell](#-running-tests-in-windows-powershell)
   - [⚠️ Error triggers](#️-error-triggers)
     - [🚨 Error Trigger Table](#-error-trigger-table)
   - [📄 License](#-license)
@@ -54,7 +60,7 @@ Additional widget screenshots are available in the [widget presentation](docs/im
 ## 📘 About the project
 This project was created as a learning exercise and my first complete desktop GUI application in Python.
 
-It started as a simple console quiz made during a Python course. Later, I expanded it with a graphical interface, API integration, logging, error handling, stylesheets, type hints and a cleaner project structure.
+It started as a simple console quiz made during a Python course. Later, I expanded it with a graphical interface, API integration, logging, error handling, backend tests, GUI tests, stylesheets, type hints and a cleaner project structure.
 
 The application allows selecting up to 100 questions, even though the Open Trivia Database API documentation states that up to 50 questions can be requested at once. This is intentional and is used to trigger error handling paths.
 
@@ -65,11 +71,12 @@ The application data flow and module structure are described in [docs/applicatio
 - PySide6 desktop GUI with multiple application screens
 - Background question loading handled with QThread and Qt signals
 - OpenTDB API client with timeout handling and custom exceptions
-- Unit tests covering API responses, error handling and question model behavior
-- Mocked external HTTP requests for reliable, offline test execution
 - Per-session file logging with configurable console log level
 - Clear separation between GUI widgets, worker classes and question logic
 - Application data flow documented with a Mermaid diagram
+- Backend tests covering API responses, error handling and question model behavior
+- GUI tests with pytest-qt covering core widgets, signal wiring, loading states and error handling
+- Tests run offline using mocked HTTP responses and static API response data
 
 ## 🧠 What I learned
 While building this project, I practiced:
@@ -84,8 +91,11 @@ While building this project, I practiced:
 - Creating and using custom data types
 - Writing unit tests with unittest.mock, including mocked HTTP responses and patch decorators
 - Writing backend tests with both unittest and pytest to compare testing styles in a real project
-- Setting up GitHub Actions to run unit tests automatically
+- Setting up GitHub Actions to run the test suite automatically
 - Documenting application flow and architecture with Markdown and Mermaid
+- Writing GUI tests with pytest-qt and qtbot
+- Testing Qt signals, widget state changes and user interactions
+- Structuring GUI code so widgets can be tested in isolation
 
 ## 📋 Requirements
 - Python 3.11+
@@ -128,8 +138,8 @@ python main.py
     quiz-app/
     ├── .github/                          # GitHub repository configuration
     │   └── workflows/                    # GitHub Actions workflows
-    ├── docs/                             # Demo, screenshots and application documentation
-    │   └── images/                       # Widget screenshots and presentation page
+    ├── docs/                             # Demo, screenshots and application data flow
+    │   └── images/                       # Widget screenshots and presentation
     ├── modules/                          # Application source code
     │   ├── gui/                          # PySide6 GUI layer
     │   │   ├── menu_bar/                 # Application menu bar
@@ -143,26 +153,30 @@ python main.py
     │   │   │       └── components/
     │   │   └── workers/                  # Background worker and thread controller
     │   └── questions/                    # Quiz data, API parameters and OpenTDB client
-    ├── tests/                            # Unit tests and test API data
-    ├── main.py                           # Application entry point
-    ├── requirements.txt                  # Project dependencies
+    ├── tests/                            # Backend and GUI unit tests
+    │   ├── data/                         # Static API response data
+    │   ├── gui/                          # GUI tests written with pytest-qt
+    │   ├── pytest_backend/               # Backend tests written with pytest
+    │   └── unittest_backend/             # Backend tests written with unittest
+    ├── .gitignore
     ├── CHANGELOG.md                      # Release history
+    ├── LICENSE
+    ├── main.py                           # Application entry point
     ├── README.md
-    └── LICENSE
+    └── requirements.txt                  # Project dependencies
 
 ## 📌 Project status
-The application is functional. The main planned improvement is expanding GUI logic tests.
+The application is functional and stable. The main planned tasks have been completed. At the moment, additional code quality and maintenance improvements can be considered.
 
 ## 🚧 Known limitations
-- The application depends on an internet connection
-- GUI behavior is partially covered by automated tests
-- The app was tested manually on Windows
+- The application depends on an internet connection and OpenTDB API availability.
+- The app has been tested manually primarily on Windows.
 
 ## 🛣 Roadmap
 
 ### ✅ Completed
 - [x] Initial basic version
-- [x] Unit tests
+- [x] Add backend unit test coverage with unittest
 - [x] Refactor application flow to use Qt signals
 - [x] Move question loading out of the GUI layer into a dedicated thread
 - [x] Add loading overlay
@@ -171,27 +185,39 @@ The application is functional. The main planned improvement is expanding GUI log
 - [x] Add Changelog
 - [x] Refactor the Questions model so its constructor does not immediately load questions from the API
 - [x] Improve encapsulation in GUI modules
-- [x] Add pytest backend unit tests 
+- [x] Add backend unit test coverage with pytest
+- [x] Add pytest-qt coverage for core GUI widgets, signal wiring, and loading/error handling
 
 ### 📝 Planned
-- [ ] Expand GUI logic tests
 - [ ] Consider additional code quality and maintenance improvements
 
 ## 🧪 Tests
-This repository contains two backend test suites, kept for educational purposes:
+This repository includes a broad backend and GUI test suite focused on the application's most important behavior. The application uses `pytest` as the main test runner and `pytest-qt` for testing the GUI layer. Tests are located in their designated folders in `tests/`.
 
-- `tests/unittest_backend` contains backend tests written with Python's built-in `unittest`.
-- `tests/pytest_backend` contains the pytest-based version of the same backend tests.
+- `tests/unittest_backend` - contains backend tests written with Python's built-in `unittest`. This suite is not used and is kept for educational purposes.
+- `tests/pytest_backend` - contains the main `pytest` backend tests.
+- `tests/gui` - contains GUI tests written with `pytest` and `pytest-qt`.
 
-The application uses `pytest` as the main test runner, because the project also includes GUI tests written with `pytest-qt`. The pytest suite covers the OpenTDB API client, question model behavior, API error handling, and selected GUI behavior.
+**Backend tests** cover the OpenTDB API client and question model behavior, including:
+- Request parameter handling, mocked API responses, and API error handling
+- Invalid response formats, question object creation, and HTML entity decoding
+- Answer list construction, answer shuffling, and point assignment
+- Additional edge cases around API and model behavior
 
-The GUI layer is currently tested with `pytest-qt`. At the moment, the Start button behavior is covered.
+**GUI tests** focus on the core quiz widgets and application flow, including:
+- Quiz parameter selection, start button behavior, and signal wiring
+- Question loading signals, answer selection, and result calculation
+- Error handling, loading overlay behavior, and screen switching
+- Repeat quiz handling, close-event behavior, and MainWindow coordination
+- Additional GUI-related behavior
 
-Tests are also run automatically with GitHub Actions on pushes to `main` and `dev`, pull requests to `main`, and manual workflow runs.
+Some fixtures are shared between tests. They are kept in their respective test modules instead of a shared `conftest.py` file to keep the test setup easier to read.
+
+### 🤖 CI
+Tests are run automatically with GitHub Actions on pushes to `main` and `dev`, pull requests to `main`, and manual workflow runs.
 
 #### 💻 Running tests in Windows PowerShell
 ```powershell
-cd quiz-app
 python -m pytest tests
 ```
 

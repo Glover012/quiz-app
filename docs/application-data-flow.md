@@ -10,6 +10,8 @@ This document shows how data moves through the application. `MainWindow` acts as
 
 ## 🔎 Application Flow
 
+The diagram is intentionally simplified and focuses on the main data flow between application layers, not every internal Qt signal connection.
+
 ```mermaid
 flowchart LR
     MainWindow["MainWindow"]
@@ -19,7 +21,7 @@ flowchart LR
     WelcomeLabel["WelcomeLabel"]
     ErrorOverlay["ErrorOverlay"]
     StartDisplay["StartDisplay"]
-    StartDisplayWidgets["Button + Params Widgets"]
+    StartDisplayWidgets["StartButton + QuestionParams"]
     WorkerThreadController["WorkerThreadController"]
     LoadingOverlay["LoadingOverlay"]
     QuestionLoader["QuestionLoader"]
