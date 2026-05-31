@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- Pytest-cov dependency for local test coverage reporting
+
+### Changed
+- Updated README project overview, learning notes and technical presentation
+- Updated test coverage badge
+- Documented the PowerShell command for running tests with coverage
+- Added generated coverage artifacts to `.gitignore`
+
 ## v1.2.0
 
 ### Added

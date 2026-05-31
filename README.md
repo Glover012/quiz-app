@@ -3,20 +3,21 @@
 ![Status](https://img.shields.io/badge/Status-Stable-brightgreen)
 ![Platform](https://img.shields.io/badge/Platform-Windows-blue)
 ![PySide6](https://img.shields.io/badge/GUI-PySide6-green)
-![Test Coverage](https://img.shields.io/badge/Test%20Coverage-80%25-yellowgreen)
+![Test Coverage](https://img.shields.io/badge/Test%20Coverage-93%25-brightgreen)
 ![Tests](https://github.com/Glover012/quiz-app/actions/workflows/tests.yml/badge.svg?branch=main)
 ![Commits](https://img.shields.io/github/commit-activity/t/Glover012/quiz-app?label=Commits)
 ![Pull Requests](https://img.shields.io/github/issues-search/Glover012/quiz-app?query=is%3Apr&label=Pull%20Requests)
 ![License](https://img.shields.io/github/license/Glover012/quiz-app)
 
-A simple quiz application built in Python with a PySide6 GUI.
+A desktop quiz application built with Python and a PySide6 GUI.
 
 ## 🚀 Table of contents
 - [🎯 Quiz App](#-quiz-app)
   - [🚀 Table of contents](#-table-of-contents)
+  - [📘 About the project](#-about-the-project)
+  - [🧩 What this project demonstrates](#-what-this-project-demonstrates)
   - [✨ Features](#-features)
   - [🎬 Demo](#-demo)
-  - [📘 About the project](#-about-the-project)
   - [🔄 Application data flow](#-application-data-flow)
   - [🛠️ Technical highlights](#️-technical-highlights)
   - [🧠 What I learned](#-what-i-learned)
@@ -33,13 +34,31 @@ A simple quiz application built in Python with a PySide6 GUI.
     - [✅ Completed](#-completed)
     - [📝 Planned](#-planned)
   - [🧪 Tests](#-tests)
-      - [🤖 CI](#-ci)
-        - [💻 Running tests in Windows PowerShell](#-running-tests-in-windows-powershell)
+    - [🤖 CI](#-ci)
+      - [💻 Running tests with coverage in Windows PowerShell](#-running-tests-with-coverage-in-windows-powershell)
   - [⚠️ Error triggers](#️-error-triggers)
     - [🚨 Error Trigger Table](#-error-trigger-table)
   - [📄 License](#-license)
   - [👤 Author contact](#-author-contact)
   - [⭐ Support](#-support)
+
+## 📘 About the project
+This project started as a simple console quiz application and gradually evolved into a structured desktop app with GUI screens, external API integration, background loading, custom error handling, logging, automated tests, CI and project documentation.
+
+Initially, the main goal was to build a simple application with a GUI. However, the development of this app took an unexpected turn. As the project grew, it was refactored multiple times for different reasons, but the main one was often: "let's just improve this small thing".
+
+Over time, the app evolved on many levels: code quality, project structure, error handling, tests, CI, threaded question loading and overall maintainability.
+
+Now, this project shows my learning process, code evolution, project structure improvements and the amount of work put into developing and refactoring a real application over time.
+
+## 🧩 What this project demonstrates
+- Iterative development: from a console quiz to a structured desktop GUI application
+- Python project organization with separated GUI, worker, API and question logic modules
+- GUI development with PySide6, Qt signals and QThread-based background loading
+- External API integration with timeout handling, custom exceptions and user-facing error states
+- Automated testing with pytest, pytest-qt and mocked HTTP responses
+- CI setup with GitHub Actions for automated test runs
+- Documentation of application flow, project structure and technical decisions
 
 ## ✨ Features
 - GUI built with PySide6
@@ -57,13 +76,6 @@ Additional widget screenshots are available in the [widget presentation](docs/im
 
 ![Quiz App Demo](docs/quiz-app-demo.gif)
 
-## 📘 About the project
-This project was created as a learning exercise and my first complete desktop GUI application in Python.
-
-It started as a simple console quiz made during a Python course. Later, I expanded it with a graphical interface, API integration, logging, error handling, backend tests, GUI tests, stylesheets, type hints and a cleaner project structure.
-
-The application allows selecting up to 100 questions, even though the Open Trivia Database API documentation states that up to 50 questions can be requested at once. This is intentional and is used to trigger error handling paths.
-
 ## 🔄 Application data flow
 The application data flow and module structure are described in [docs/application-data-flow.md](docs/application-data-flow.md).
 
@@ -79,8 +91,6 @@ The application data flow and module structure are described in [docs/applicatio
 - Tests run offline using mocked HTTP responses and static API response data
 
 ## 🧠 What I learned
-While building this project, I practiced:
-
 - Building a desktop GUI application with PySide6
 - Structuring a Python project into smaller, focused modules
 - Separating GUI code, background workers, API access and data models
@@ -93,7 +103,7 @@ While building this project, I practiced:
 - Writing backend tests with both unittest and pytest to compare testing styles in a real project
 - Setting up GitHub Actions to run the test suite automatically
 - Documenting application flow and architecture with Markdown and Mermaid
-- Writing GUI tests with pytest-qt and qtbot
+- Writing GUI tests with pytest and pytest-qt
 - Testing Qt signals, widget state changes and user interactions
 - Structuring GUI code so widgets can be tested in isolation
 
@@ -170,7 +180,7 @@ The application is functional and stable. The main planned tasks have been compl
 
 ## 🚧 Known limitations
 - The application depends on an internet connection and OpenTDB API availability.
-- The app has been tested manually primarily on Windows.
+- The app has been tested manually on Windows.
 
 ## 🛣 Roadmap
 
@@ -213,12 +223,14 @@ This repository includes a broad backend and GUI test suite focused on the appli
 
 Some fixtures are shared between tests. They are kept in their respective test modules instead of a shared `conftest.py` file to keep the test setup easier to read.
 
+To avoid using external services, test coverage is measured locally with `pytest-cov`, and the README badge is updated manually.
+
 ### 🤖 CI
 Tests are run automatically with GitHub Actions on pushes to `main` and `dev`, pull requests to `main`, and manual workflow runs.
 
-#### 💻 Running tests in Windows PowerShell
+#### 💻 Running tests with coverage in Windows PowerShell
 ```powershell
-python -m pytest tests
+python -m pytest tests --cov=modules --cov-report=term-missing
 ```
 
 For unittest use:
@@ -227,6 +239,8 @@ python -m unittest discover tests/unittest_backend
 ```
 
 ## ⚠️ Error triggers
+The application allows selecting up to 100 questions, even though the Open Trivia Database API documentation states that up to 50 questions can be requested at once. This is intentional and is used to trigger error handling paths.
+
 Some OpenTDB parameter combinations may return too few questions or no questions at all, which may be used to exercise the application's error handling flow.
 
 ### 🚨 Error Trigger Table
